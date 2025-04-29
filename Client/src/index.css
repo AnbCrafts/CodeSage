@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+.glow-bg {
+  background: radial-gradient(circle at center, #0f172a 0%, #0c0c3a 100%);
+  box-shadow: 0 0 40px #1e3a8a, 0 0 80px #3b82f6;
+}
+
+
+.body {
+  background: 
+    linear-gradient(
+      to bottom right,
+      rgba(12, 12, 58, 0.9),   /* Dark navy top-left */
+      rgba(30, 58, 138, 0.8),  /* Deep blue center */
+      rgba(59, 130, 246, 0.7)  /* Lighter glowing blue bottom-right */
+    ),
+    url('/src/assets/bg.avif');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #e2e8f0; /* Optional: soft slate text for contrast */
+}
+
+
+.hero {
+  background: 
+    linear-gradient(
+      to bottom right,
+      rgba(2, 2, 26, 0.9),   /* Dark navy top-left */
+      rgba(1, 12, 42, 0.8),  /* Deep blue center */
+      rgba(59, 130, 246, 0.7)  /* Lighter glowing blue bottom-right */
+    ),
+    url('/src/assets/bg.avif');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #e2e8f0; /* Optional: soft slate text for contrast */
+}
+
+.noScroll::-webkit-scrollbar{
+  display: none;
+
+  
+}
+
+
+button:disabled {
+  color: gray; 
+  cursor: not-allowed; 
+}
+.moving-element {
+
+  transform: translateX(0);
+  animation: moveLeftRight 3s infinite; 
+  animation-timing-function: linear; 
+}
+
+@keyframes moveLeftRight {
+  0% {
+    transform: translateX(0);     
+  }
+  50% {
+    transform: translateX(1000px);    
+  }
+  50.01% {
+    transform: translateX(0);      
+  }
+  100% {
+    transform: translateX(1000px);      
+  }
+}
+/* .x{
+  color: #0f172a;
+} */
