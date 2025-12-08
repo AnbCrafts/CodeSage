@@ -1,7 +1,6 @@
 
 # 🧙‍♂️ CodeSage - AI Code Assistant
 
-*(Replace this link with a screenshot of your Home Page or Dashboard)*
 
 > **Understand code instantly.** CodeSage decodes complex logic into plain English, suggests optimizations, and refactors your code using the power of Llama-3 and Groq Cloud.
 
