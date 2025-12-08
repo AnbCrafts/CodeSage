@@ -65,13 +65,6 @@ Built with the **MERN Stack** and **Groq Cloud** for blazing-fast inference.
 
 -----
 
-## 📸 Screenshots
-
-| Home Page | Analysis IDE |
-|:---:|:---:|
-|  |  |
-
-*(Replace these placeholders with actual screenshots of your app)*
 
 -----
 
