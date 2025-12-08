@@ -1,208 +1,190 @@
-import React, { useContext, useEffect, useState } from 'react'
-import Header from '../Components/Header';
+import React, { useContext, useEffect, useState } from 'react';
+import { 
+  Play, 
+  Trash2, 
+  Copy, 
+  Download, 
+  Maximize2, 
+  FileCode, 
+  MessageSquare, 
+  Scissors, 
+  Lightbulb, 
+  Loader2 
+} from 'lucide-react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { motion, AnimatePresence } from 'framer-motion';
+import HomeHeader from '../Components/HomeHeader';
 import { CodeContext } from '../ContextAPI/CodeContext';
-import Loader from '../Components/Loader';
-import { assets } from '../assets/assets';
 
-const Analyze = () => { 
-
-
-  const{handleSaveAsTxt,
-    handleCopyExplanation,
-    processInput,setProcessInput,
-    input,setInput,
-    suggestedCode,setSuggestedCode,
-    explanation,setExplanation,
-    trimmedCode,setTrimmedCode,
-    summarizedCode,setSummarizedCode,
+const Analyze = () => {
+  
+  const {
+    input, setInput,
+    suggestedCode,
+    explanation,
+    trimmedCode,
+    summarizedCode,
     isLoading,
-    error,getExplanation,getSuggestion,getSummary,getTrimmedCode} = useContext(CodeContext);
+    getExplanation,
+    getSuggestion,
+    getSummary,
+    getTrimmedCode,
+    handleSaveAsTxt,
+    handleCopyExplanation
+  } = useContext(CodeContext);
 
-    const [showLoader,setShowLoader] = useState(false);
-  
-  useEffect(()=>{
-    if(btnTxt === "Explain"){
+  const [activeTab, setActiveTab] = useState("summary");
 
-      getExplanation();
+  // Map actions to tabs
+  const handleAction = async (action) => {
+    setActiveTab(action);
+    if (action === "summary") getSummary();
+    if (action === "explain") getExplanation();
+    if (action === "suggest") getSuggestion();
+    if (action === "trim") getTrimmedCode();
+  };
+
+  const getActiveContent = () => {
+    switch (activeTab) {
+      case "summary": return summarizedCode;
+      case "explain": return explanation;
+      case "suggest": return suggestedCode;
+      case "trim": return trimmedCode;
+      default: return "";
     }
-    else if(btnTxt === "Summarize"){
-getSummary();
-    }
-    else if(btnTxt === "Trim"){
-getTrimmedCode();
-    }
-    else if(btnTxt === "Suggest"){
-      getSuggestion();
-
-    }
-    
-  },[processInput]);
-
-  useEffect(()=>{
-    console.log(explanation);
-  },[explanation]);
-
-  const handleClear = ()=>{
-    setInput("");
-    setExplanation("");
-    setSuggestedCode("");
-    setSummarizedCode("");
-    setTrimmedCode("");
-    setBtnTxt("");
-  }
-  
-
-  const[toggleImg,setToggleImg] = useState(false);
-  const[btnTxt,setBtnTxt] = useState("Summarize");
-  const toggleDropDown=()=>{
-    setToggleImg(!toggleImg)
-  }
- 
-
-  const handleTask = ()=>{
-    if(input.length>0){
-      setProcessInput(true);
-    }
-    else{
-      alert("There's nothing to process")
-    }
-  }
-  
-  useEffect(()=>{
-    console.log(isLoading);
-  },[processInput])
-
-
- 
-
-  
+  };
 
   return (
-    <div>
+    <div className="bg-slate-950 min-h-screen text-slate-200 font-sans selection:bg-purple-500 selection:text-white">
+      <HomeHeader />
 
-<div className="min-h-screen bg-[#0c0c3a] text-white  w-[90%] mx-auto relative">
-      <Header/>
-      <Loader isLoading={showLoader}/>
-
-  <div className="flex items-center justify-between w-[100%] gap-5">
-    {/* Code Input */}
-    <div className="bg-[#111842] p-6 rounded-2xl shadow-xl flex-1">
-      <label className="block mb-5 text-purple-300 text-lg">Paste Your Code 👇</label>
-
-      <textarea className="w-full h-100 p-4 rounded-lg bg-[#0e1a40] text-white font-mono resize-none noScroll overflow-y-scroll" value={input} onChange={(e)=>setInput(e.target.value)} />
-      <div className="flex justify-between mt-4 relative py-2">
-        <button onClick={handleTask} className={`${btnTxt.length?"bg-blue-600 text-lg hover:bg-blue-700":""}  px-4 py-2 rounded-xl block cursor-pointer "`}>{btnTxt}</button> 
-               
-        <div className={`${toggleImg?"h-50":"h-11"} w-60  border border-white  rounded-xl overflow-y-hidden text-center absolute left-[50%] -translate-x-[50%] flex items-center flex-col justify-between py-1 bg-[#0f172a]`}>
-          <div className='absolute h-8 w-8 bg-white top-1 right-3 rounded cursor-pointer  '>
-            <img onClick={toggleDropDown} src={!toggleImg ? assets.down : assets.up} className='h-full w-full object-cover' alt="" />
-
-          </div>
+      <div className="pt-24 pb-10 px-6 h-screen flex flex-col">
         
-        <span onClick={()=>setBtnTxt("Summarize")} className="text-lg hover:bg-gray-900 px-4 py-1.5  rounded-xl block mx-auto cursor-pointer w-[100%]">Summarize</span>
-        <span onClick={()=>setBtnTxt("Explain")}  className="text-lg hover:bg-gray-700 px-4 py-1.5  rounded-xl block mx-auto cursor-pointer w-[100%]">Explain</span>
-        <span onClick={()=>setBtnTxt("Suggest")} className="text-lg hover:bg-gray-700 px-4 py-1.5  rounded-xl block mx-auto cursor-pointer w-[100%]">Suggest</span>
-        <span onClick={()=>setBtnTxt("Trim")} className="text-lg hover:bg-gray-700 px-4 py-1.5  rounded-xl block mx-auto cursor-pointer w-[100%]">Trim</span>
+        {/* TOOLBAR */}
+        <div className="flex flex-col md:flex-row justify-between items-center bg-slate-900 border-b border-white/5 px-6 py-4 rounded-t-xl gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500" />
+            <div className="w-3 h-3 rounded-full bg-yellow-500" />
+            <div className="w-3 h-3 rounded-full bg-green-500" />
+            <span className="ml-4 text-sm font-mono text-slate-400">editor.js</span>
+          </div>
+
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setInput("")}
+              className="p-2 text-slate-400 hover:text-red-400 hover:bg-white/5 rounded-lg transition-colors"
+              title="Clear Editor"
+            >
+              <Trash2 size={18} />
+            </button>
+            <button className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-lg transition-all shadow-lg shadow-purple-900/20"
+              onClick={() => handleAction("summary")} // Default action
+            >
+              <Play size={16} fill="currentColor" /> Run Analysis
+            </button>
+          </div>
+        </div>
+
+        {/* MAIN WORKSPACE (Split View) */}
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden border border-white/5 border-t-0 rounded-b-xl bg-slate-900/50 backdrop-blur-sm">
           
+          {/* LEFT: EDITOR */}
+          <div className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 relative">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="// Paste your code here..."
+              className="flex-1 w-full h-full bg-slate-950/50 p-6 font-mono text-sm text-slate-300 resize-none focus:outline-none focus:bg-slate-950/80 transition-colors"
+              spellCheck="false"
+            />
+            <div className="absolute bottom-4 right-6 text-xs text-slate-500 font-mono">
+              {input.length} chars
+            </div>
+          </div>
 
+          {/* RIGHT: AI OUTPUT */}
+          <div className="w-full lg:w-1/2 flex flex-col bg-slate-900">
+            
+            {/* TABS */}
+            <div className="flex border-b border-white/5">
+              {[
+                { id: "summary", label: "Summary", icon: <FileCode size={16} /> },
+                { id: "explain", label: "Explain", icon: <MessageSquare size={16} /> },
+                { id: "suggest", label: "Suggestions", icon: <Lightbulb size={16} /> },
+                { id: "trim", label: "Trim", icon: <Scissors size={16} /> },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => handleAction(tab.id)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-medium border-b-2 transition-all ${
+                    activeTab === tab.id 
+                      ? "border-purple-500 text-white bg-white/5" 
+                      : "border-transparent text-slate-500 hover:text-slate-300 hover:bg-white/5"
+                  }`}
+                >
+                  {tab.icon} {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* CONTENT AREA */}
+            <div className="flex-1 p-6 overflow-y-auto relative custom-scrollbar">
+              {isLoading ? (
+                <div className="h-full flex flex-col items-center justify-center text-slate-500 gap-4">
+                  <Loader2 size={40} className="animate-spin text-purple-500" />
+                  <p className="animate-pulse">Analyzing logic...</p>
+                </div>
+              ) : getActiveContent() ? (
+                <div className="relative group">
+                  {/* Action Buttons (Copy/Download) */}
+                  <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <button 
+                      onClick={handleCopyExplanation}
+                      className="p-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-purple-600 hover:text-white transition-colors shadow-lg"
+                      title="Copy to Clipboard"
+                    >
+                      <Copy size={16} />
+                    </button>
+                    <button 
+                      onClick={handleSaveAsTxt}
+                      className="p-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-blue-600 hover:text-white transition-colors shadow-lg"
+                      title="Download as .txt"
+                    >
+                      <Download size={16} />
+                    </button>
+                  </div>
+
+                  {/* Code / Text Output */}
+                  {activeTab === "trim" || activeTab === "suggest" ? (
+                    <SyntaxHighlighter 
+                      language="javascript" 
+                      style={vscDarkPlus}
+                      customStyle={{ padding: '1.5rem', borderRadius: '0.75rem', fontSize: '0.9rem', backgroundColor: '#0f172a' }}
+                      wrapLongLines={true}
+                    >
+                      {getActiveContent()}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <div className="prose prose-invert max-w-none text-slate-300 leading-relaxed whitespace-pre-wrap font-sans text-sm">
+                      {getActiveContent()}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-60">
+                  <Maximize2 size={48} strokeWidth={1} className="mb-4" />
+                  <p>Select an action to analyze your code.</p>
+                </div>
+              )}
+            </div>
+
+          </div>
         </div>
 
-        <button onClick={handleClear} className="text-gray-300 hover:text-red-400 cursor-pointer hover:shadow" disabled={input===""}>Clear</button>
       </div>
     </div>
+  );
+};
 
-    {/* AI Output */}
-    <div className="bg-[#111842] p-6 rounded-2xl shadow-xl flex-1 ">
-      <h2 className="text-xl text-indigo-300 mb-4">AI Response 💬</h2>
-      <div className="space-y-4 max-h-[500px] overflow-y-auto noScroll">
-        <div className="bg-[#1e3a8a] p-4 rounded-lg shadow">
-          <h3 className="font-bold text-purple-300">🧠 Summary:</h3>
-          <p className={`max-h-100 overflow-y-scroll scroll-smooth noScroll ${summarizedCode.length?"border border-gray-900 rounded-lg p-2 my-3 text-md text-gray-900":""} `}>{summarizedCode.length?summarizedCode:"This code defines a function that handles user login by verifying credentials..."}</p>
-          {summarizedCode && 
-          <div className="card-actions flex items-center justify-start gap-5 py-2 px-4 my-3">
-            <button onClick={handleCopyExplanation} className=' px-4 py-1 rounded text-sm bg-[#0c0c3a] text-white font-semibold cursor-pointer shadow-2xl shadow-[#ffffff6e] hover:shadow-lg transition-all '>Copy</button>
-            <button onClick={handleSaveAsTxt} className=' px-4 py-1 rounded text-sm bg-[#0c0c3a] text-white font-semibold cursor-pointer shadow-2xl shadow-[#ffffff6e] hover:shadow-lg transition-all '>Save as TXT</button>
-          </div>
-        }
-        </div>
-        <div className="bg-[#3b82f6] p-4 rounded-lg shadow">
-          <h3 className="font-bold text-indigo-100">📖 Explanation:</h3>
-          <p className={`max-h-100 overflow-y-scroll scroll-smooth noScroll ${explanation.length?"border border-gray-900 rounded-lg p-2 my-3 text-md text-gray-900":""} `}>{explanation.length?explanation:"Line-by-line explanation of how the logic flows..."}</p>
-
-          {explanation && 
-          <div className="card-actions flex items-center justify-start gap-5 py-2 px-4 my-3">
-            <button onClick={handleCopyExplanation} className=' px-4 py-1 rounded text-sm bg-[#0c0c3a] text-white font-semibold cursor-pointer shadow-2xl shadow-[#ffffff6e] hover:shadow-lg transition-all '>Copy</button>
-            <button onClick={handleSaveAsTxt} className=' px-4 py-1 rounded text-sm bg-[#0c0c3a] text-white font-semibold cursor-pointer shadow-2xl shadow-[#ffffff6e] hover:shadow-lg transition-all '>Save as TXT</button>
-          </div>
-        }
-        </div>
-        <div className="bg-[#3b82f6] p-4 rounded-lg shadow">
-          <h3 className="font-bold text-indigo-100">🤔 Suggestions:</h3>
-          <p className={`max-h-100 overflow-y-scroll scroll-smooth noScroll ${suggestedCode.length?"border border-gray-900 rounded-lg p-2 my-3 text-md text-gray-900":""} `}>{suggestedCode.length?suggestedCode:"This code can also be optimized if ....."}</p>
-          {suggestedCode && 
-          <div className="card-actions flex items-center justify-start gap-5 py-2 px-4 my-3">
-            <button onClick={handleCopyExplanation} className=' px-4 py-1 rounded text-sm bg-[#0c0c3a] text-white font-semibold cursor-pointer shadow-2xl shadow-[#ffffff6e] hover:shadow-lg transition-all '>Copy</button>
-            <button onClick={handleSaveAsTxt} className=' px-4 py-1 rounded text-sm bg-[#0c0c3a] text-white font-semibold cursor-pointer shadow-2xl shadow-[#ffffff6e] hover:shadow-lg transition-all '>Save as TXT</button>
-          </div>
-        }
-        </div>
-        <div className="bg-[#3b82f6] p-4 rounded-lg shadow">
-          <h3 className="font-bold text-indigo-100">✂️ Trimmed:</h3>
-          <p className={`max-h-100 overflow-y-scroll scroll-smooth noScroll ${trimmedCode.length?"border border-gray-900 rounded-lg p-2 my-3 text-md text-gray-900":""} `}>{trimmedCode.length?trimmedCode:"This code can also be written like this ....."}</p>
-          {trimmedCode && 
-          <div className="card-actions flex items-center justify-start gap-5 py-2 px-4 my-3">
-            <button onClick={handleCopyExplanation} className=' px-4 py-1 rounded text-sm bg-[#0c0c3a] text-white font-semibold cursor-pointer shadow-2xl shadow-[#ffffff6e] hover:shadow-lg transition-all '>Copy</button>
-            <button onClick={handleSaveAsTxt} className=' px-4 py-1 rounded text-sm bg-[#0c0c3a] text-white font-semibold cursor-pointer shadow-2xl shadow-[#ffffff6e] hover:shadow-lg transition-all '>Save as TXT</button>
-          </div>
-        }
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-12 px-4 w-[90%] mx-auto ">
-  {/* Summary */}
-  <div className="bg-[#111842] p-6 rounded-2xl shadow-lg text-white hover:shadow-indigo-500/30 transition-all">
-    <div className="text-4xl mb-4">🧠</div>
-    <h3 className="text-xl font-semibold text-indigo-300 mb-2">Code Summary</h3>
-    <p className="text-gray-300 text-sm">
-      Get a high-level overview of what your code does — perfect for quick reviews and understanding.
-    </p>
-  </div>
-
-  {/* Explanation */}
-  <div className="bg-[#111842] p-6 rounded-2xl shadow-lg text-white hover:shadow-purple-500/30 transition-all">
-    <div className="text-4xl mb-4">📖</div>
-    <h3 className="text-xl font-semibold text-purple-300 mb-2">Line-by-Line Explanation</h3>
-    <p className="text-gray-300 text-sm">
-      Understand each line of your code in plain English — great for learning and debugging.
-    </p>
-  </div>
-
-  {/* Suggestions */}
-  <div className="bg-[#111842] p-6 rounded-2xl shadow-lg text-white hover:shadow-blue-500/30 transition-all">
-    <div className="text-4xl mb-4">🛠️</div>
-    <h3 className="text-xl font-semibold text-blue-300 mb-2">Suggestions</h3>
-    <p className="text-gray-300 text-sm">
-      Improve your code with AI-generated tips for optimization, best practices, and structure.
-    </p>
-  </div>
-
-  {/* Shorten Code */}
-  <div className="bg-[#111842] p-6 rounded-2xl shadow-lg text-white hover:shadow-pink-500/30 transition-all">
-    <div className="text-4xl mb-4">✂️</div>
-    <h3 className="text-xl font-semibold text-pink-300 mb-2">Shorten Code</h3>
-    <p className="text-gray-300 text-sm">
-      Minimize your code while keeping its logic intact — cleaner, faster, and more readable.
-    </p>
-  </div>
-</div>
-
-
-      
-    </div>
-  )
-}
-
-export default Analyze
+export default Analyze;

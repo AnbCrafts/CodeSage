@@ -28,7 +28,6 @@ const App = () => {
         
       </Routes>
 
-    <hr className='h-[2px] w-full bg-white mt-5' />
       <Footer/>
 
       

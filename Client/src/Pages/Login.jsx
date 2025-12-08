@@ -1,137 +1,182 @@
-import React, { useState } from 'react'
-import HomeHeader from '../Components/HomeHeader'
-import { assets } from '../assets/assets'
+import React, { useState } from 'react';
+import { 
+  User, 
+  Mail, 
+  Lock, 
+  ArrowRight, 
+  ShieldCheck, 
+  Zap, 
+  Github, 
+  Chrome 
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import HomeHeader from '../Components/HomeHeader';
 
 const Login = () => {
-  const [login,setLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(true);
+
   return (
-    <div className='min-h-[100vh] w-full mx-auto'>
-      <HomeHeader/>
+    <div className="bg-slate-950 min-h-screen text-slate-200 font-sans selection:bg-purple-500 selection:text-white">
+      <HomeHeader />
 
-        <div className='h-auto w-full flex items-start justify-between px-5'>
-       
-        <div className='h-[520px] w-[600px] border relative rounded-2xl'>
-        <img src={assets.login} className='h-full w-full object-cover rounded-2xl' alt="" />
-    <div className='absolute top-0 h-full w-full bg-[#00000044] rounded-2xl p-10 text-white'>
+      <div className="pt-32 pb-20 px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           
-          <h1 className=' text-5xl mx-auto w-fit font-bold'>{login?"Login":"Join Us"}</h1>
+          {/* LEFT: FORM SECTION */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-md mx-auto"
+          >
+            <div className="mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                {isLogin ? "Welcome back" : "Create an account"}
+              </h1>
+              <p className="text-slate-400">
+                {isLogin 
+                  ? "Enter your details to access your workspace." 
+                  : "Start analyzing your code smarter, faster, and easier."}
+              </p>
+            </div>
 
-          <div className='mb-5 mt-10'>
-            {login?
-            "":
-            (<div className='flex items-center justify-between gap-5 py-3  text-lg'>
-              <label htmlFor="email">E-mail:</label> 
-              <input type="email" name="email" id="email" className='flex-1 max-w-[400px] border border-[violet] rounded outline-hidden text-sm p-2' />
-            </div>)}
+            <div className="space-y-4">
+              {/* OAuth Buttons */}
+              <button className="w-full flex items-center justify-center gap-3 bg-white text-slate-900 font-semibold py-3 rounded-xl hover:bg-slate-200 transition-colors">
+                <Chrome size={20} /> Continue with Google
+              </button>
+              <button className="w-full flex items-center justify-center gap-3 bg-slate-800 text-white font-semibold py-3 rounded-xl hover:bg-slate-700 transition-colors border border-white/5">
+                <Github size={20} /> Continue with GitHub
+              </button>
 
-          <div className='flex items-center justify-between gap-5 py-3  text-lg'>
-            <label htmlFor="username">Username:</label> 
-            <input type="text" name="username" id="username" className='flex-1 max-w-[400px] border border-[violet] rounded outline-hidden text-sm p-2' />
-          </div>
-          <div className='flex items-center justify-between gap-5 py-3 text-lg'>
-            <label htmlFor="password">Password:</label> 
-            <input type="text" name="password" id="password" className='flex-1 max-w-[400px] border border-[violet] rounded outline-hidden text-sm p-2' />
-          </div>
+              <div className="relative flex py-4 items-center">
+                <div className="flex-grow border-t border-slate-800"></div>
+                <span className="flex-shrink-0 mx-4 text-slate-500 text-sm">Or continue with</span>
+                <div className="flex-grow border-t border-slate-800"></div>
+              </div>
 
-          <button className='block mx-auto w-fit py-3 px-15 my-10 rounded-lg hover:bg-white hover:text-slate-900 bg-slate-900 text-lg cursor-pointer transition-all font-semibold'>{login?"Login":"Create Account"}</button>
-          <p onClick={()=>setLogin(!login)} className='cursor-pointer text-lg text-slate-600 hover:text-slate-300 transition-all mx-auto w-fit'>{login?"Don't have an account? Create a new account":"Already have an account? Login now"}</p>
-          </div>
+              {/* Input Fields */}
+              <form className="space-y-4">
+                <AnimatePresence>
+                  {!isLogin && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="relative">
+                        <User className="absolute left-4 top-3.5 text-slate-500" size={20} />
+                        <input 
+                          type="text" 
+                          placeholder="Full Name" 
+                          className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-    </div>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-3.5 text-slate-500" size={20} />
+                  <input 
+                    type="email" 
+                    placeholder="Email Address" 
+                    className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                  />
+                </div>
+
+                <div className="relative">
+                  <Lock className="absolute left-4 top-3.5 text-slate-500" size={20} />
+                  <input 
+                    type="password" 
+                    placeholder="Password" 
+                    className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                  />
+                </div>
+
+                {isLogin && (
+                  <div className="flex justify-end">
+                    <a href="#" className="text-sm text-purple-400 hover:text-purple-300">Forgot password?</a>
+                  </div>
+                )}
+
+                <button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-purple-900/20 transition-all flex items-center justify-center gap-2 mt-2">
+                  {isLogin ? "Sign In" : "Create Account"} <ArrowRight size={18} />
+                </button>
+              </form>
+
+              <div className="text-center mt-6">
+                <p className="text-slate-400">
+                  {isLogin ? "Don't have an account?" : "Already have an account?"} 
+                  <button 
+                    onClick={() => setIsLogin(!isLogin)}
+                    className="ml-2 text-white font-semibold hover:underline"
+                  >
+                    {isLogin ? "Sign up" : "Log in"}
+                  </button>
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* RIGHT: FEATURE SHOWCASE */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="hidden lg:block relative"
+          >
+            {/* Background Blob */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[100px] -z-10" />
+
+            <div className="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-20">
+                <Zap size={120} className="text-purple-500" />
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-6">
+                  {isLogin ? "Welcome back, Coder." : "Join the AI Revolution"}
+                </h3>
+                
+                <div className="space-y-6">
+                  {[
+                    { title: "Smart Analysis", desc: "Get instant feedback on complexity and logic." },
+                    { title: "Secure & Private", desc: "Your code is processed in-memory and never stored." },
+                    { title: "Multi-Language", desc: "Support for Python, JS, C++, Java, and more." }
+                  ].map((item, i) => (
+                    <div key={i} className="flex gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0 text-indigo-400">
+                        <ShieldCheck size={20} />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-semibold">{item.title}</h4>
+                        <p className="text-slate-400 text-sm">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-10 p-4 bg-slate-950 rounded-xl border border-white/5">
+                  <p className="text-slate-400 text-sm italic">
+                    "CodeSage saved me hours of debugging on my last project. The explanations are spot on."
+                  </p>
+                  <div className="flex items-center gap-3 mt-4">
+                    <div className="w-8 h-8 rounded-full bg-slate-700" />
+                    <div className="text-xs text-slate-500">
+                      <span className="text-white font-semibold">Alex D.</span> — Senior Dev
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
         </div>
-       
-       
-
-
-        <div className='flex-1 px-5 text-white'>
-          
-          <div className='p-5 border border-[blue] rounded-2xl'>
-          <h1 className='text-3xl'>{login?"Welcome Back! Login to your account":"Welcome to CodeSage!!! Create an account to get connected"}</h1>
-          {login
-          ?
-          <p className="text-lg mt-5 text-slate-400 mb-4">
-  Welcome back to <strong className='text-[red] text-2xl'>CodeSage </strong>! Log in to continue analyzing, simplifying, and mastering code with the power of AI.
-</p>
-:<p className="text-lg mt-5 text-slate-400 mb-4">
-New to <strong className='text-[red] text-2xl'>CodeSage </strong>? Create your free account and unlock smart code insights, real-time suggestions, and effortless understanding—powered by AI.
-</p>
-
-        }
-          </div>
-          <div className="bg-[#111842] p-8 my-12 w-full mx-auto rounded-2xl shadow-2xl text-white text-center hover:scale-105 transition-transform">
-  <div className="text-5xl mb-4">💡</div>
-  <h3 className="text-2xl md:text-3xl font-bold text-indigo-300 mb-4">
-    AI That Understands Code Like You Do
-  </h3>
-  <p className="text-gray-300 text-lg">
-    At <strong>CodeSage</strong>, we're redefining how you interact with code. Our AI breaks down complex logic, suggests improvements, and teaches you along the way — making coding easier, faster, and smarter.
-  </p>
-</div>
-  
-        </div>
-
-        
-
-        
-
-        </div>
-
-        
-        <div className=" border w-[90%] mx-auto border-[#3b82f6] rounded-2xl my-10 py-16 px-6 text-white">
-  <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
-    Worried about something?
-  </h2>
-
-  <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-    {/* Secure Login */}
-    <div className="bg-[#111842] p-6 rounded-2xl shadow-xl hover:scale-105 transition-transform">
-      <div className="text-4xl mb-4">🔐</div>
-      <h3 className="text-xl font-semibold mb-2 text-indigo-300">Secure Login</h3>
-      <p className="text-gray-300">Your credentials are encrypted with industry-standard security. Stay safe and worry-free.</p>
+      </div>
     </div>
+  );
+};
 
-    {/* Smart Authentication */}
-    <div className="bg-[#111842] p-6 rounded-2xl shadow-xl hover:scale-105 transition-transform">
-      <div className="text-4xl mb-4">🔏</div>
-      <h3 className="text-xl font-semibold mb-2 text-indigo-300">Smart Authentication</h3>
-      <p className="text-gray-300">Fast, secure, and intelligent login with options like OTP or OAuth for seamless access.</p>
-    </div>
-
-    {/* Easy Sign Up */}
-    <div className="bg-[#111842] p-6 rounded-2xl shadow-xl hover:scale-105 transition-transform">
-      <div className="text-4xl mb-4">📝</div>
-      <h3 className="text-xl font-semibold mb-2 text-indigo-300">Simple Sign Up</h3>
-      <p className="text-gray-300">Start your journey in seconds with our easy, one-step registration process.</p>
-    </div>
-
-    {/* Personal Dashboard */}
-    <div className="bg-[#111842] p-6 rounded-2xl shadow-xl hover:scale-105 transition-transform">
-      <div className="text-4xl mb-4">🧠</div>
-      <h3 className="text-xl font-semibold mb-2 text-indigo-300">Personalized Dashboard</h3>
-      <p className="text-gray-300">Manage your uploads, see AI insights, and track changes—all in one place.</p>
-    </div>
-
-    {/* Password Recovery */}
-    <div className="bg-[#111842] p-6 rounded-2xl shadow-xl hover:scale-105 transition-transform">
-      <div className="text-4xl mb-4">🔄</div>
-      <h3 className="text-xl font-semibold mb-2 text-indigo-300">Password Recovery</h3>
-      <p className="text-gray-300">Forgot your password? No worries—recover it instantly through verified email support.</p>
-    </div>
-
-    {/* User Privacy */}
-    <div className="bg-[#111842] p-6 rounded-2xl shadow-xl hover:scale-105 transition-transform">
-      <div className="text-4xl mb-4">🛡️</div>
-      <h3 className="text-xl font-semibold mb-2 text-indigo-300">Full Privacy Control</h3>
-      <p className="text-gray-300">Your data stays private. We never share user info and ensure complete confidentiality.</p>
-    </div>
-  </div>
-</div>
-
-       
-
-      
-    </div>
-  )
-}
-
-export default Login
+export default Login;

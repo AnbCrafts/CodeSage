@@ -1,59 +1,144 @@
-import React from 'react'
-import Logo from './Logo'
-import { assets } from '../assets/assets'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { 
+  Github, 
+  Twitter, 
+  Linkedin, 
+  MessageCircle, 
+  Heart, 
+  ArrowUpRight 
+} from 'lucide-react';
+import { assets } from '../assets/assets';
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
+  const footerLinks = {
+    product: [
+      { name: "Features", href: "/#features" },
+      { name: "Pricing", href: "/#pricing" },
+      { name: "Live Demo", href: "/analyze" },
+      { name: "Changelog", href: "/changelog" },
+    ],
+    resources: [
+      { name: "Documentation", href: "/docs" },
+      { name: "API Reference", href: "/api" },
+      { name: "Community", href: "/community" },
+      { name: "Blog", href: "/blog" },
+    ],
+    company: [
+      { name: "About", href: "/about" },
+      { name: "Contact", href: "/contact" },
+      { name: "Privacy Policy", href: "/privacy" },
+      { name: "Terms of Service", href: "/terms" },
+    ]
+  };
+
   return (
-    <footer className=" text-white px-6 py-12 mt-20 rounded-t-2xl shadow-inner">
-  <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
-    {/* Logo & Tagline */}
-    <div>
-      <img src={assets.logo} className='h-[70px] w-[70px] rounded-full border border-[violet] shadow-[#ee82ee72] shadow-2xl' alt="" />
-      <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">CodeSage</h2>
-      <p className="mt-3 text-md text-gray-300">Your AI coding companion — simplifying code, boosting productivity.</p>
-    </div>
+    <footer className="bg-slate-950 border-t border-white/5 pt-20 pb-10 text-slate-400 font-sans">
+      <div className="max-w-7xl mx-auto px-6">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-16">
+          
+          {/* BRAND COLUMN (Takes up 2 columns on large screens) */}
+          <div className="lg:col-span-2">
+            <Link to="/" className="flex items-center gap-3 mb-6 group">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 p-[1px]">
+                <div className="w-full h-full bg-slate-950 rounded-xl flex items-center justify-center overflow-hidden">
+                   <img 
+                     src={assets.logo} 
+                     alt="CodeSage" 
+                     className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" 
+                   />
+                </div>
+              </div>
+              <span className="text-2xl font-bold text-white tracking-tight">
+                Code<span className="text-purple-500">Sage</span>
+              </span>
+            </Link>
+            
+            <p className="text-slate-400 leading-relaxed mb-8 max-w-sm">
+              The AI-powered coding companion that turns complex logic into plain English. 
+              Built for developers, students, and educators.
+            </p>
 
-    {/* Navigation */}
-    <div>
-      <h3 className="text-xl font-semibold mb-2 text-indigo-300">Quick Links</h3>
-      <ul className="space-y-2 text-sm text-gray-200">
-        <li><a href="#" className="hover:text-purple-400 transition text-lg">Home</a></li>
-        <li><a href="#" className="hover:text-purple-400 transition text-lg">Features</a></li>
-        <li><a href="#" className="hover:text-purple-400 transition text-lg">Languages</a></li>
-        <li><a href="#" className="hover:text-purple-400 transition text-lg">Upload</a></li>
-      </ul>
-    </div>
+            <div className="flex gap-4">
+              {[
+                { icon: <Twitter size={20} />, href: "#" },
+                { icon: <Github size={20} />, href: "#" },
+                { icon: <Linkedin size={20} />, href: "#" },
+                { icon: <MessageCircle size={20} />, href: "#" },
+              ].map((social, i) => (
+                <a 
+                  key={i} 
+                  href={social.href}
+                  className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 hover:bg-purple-600 hover:text-white transition-all duration-300"
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
+          </div>
 
-    {/* Resources */}
-    <div>
-      <h3 className="text-xl font-semibold mb-2 text-indigo-300">Resources</h3>
-      <ul className="space-y-2 text-sm text-gray-200">
-        <li><a href="#" className="hover:text-purple-400 transition text-lg">Documentation</a></li>
-        <li><a href="#" className="hover:text-purple-400 transition text-lg">GitHub</a></li>
-        <li><a href="#" className="hover:text-purple-400 transition text-lg">Blog</a></li>
-        <li><a href="#" className="hover:text-purple-400 transition text-lg">Help Center</a></li>
-      </ul>
-    </div>
+          {/* LINKS COLUMNS */}
+          <div>
+            <h4 className="text-white font-bold mb-6">Product</h4>
+            <ul className="space-y-4">
+              {footerLinks.product.map((link) => (
+                <li key={link.name}>
+                  <Link to={link.href} className="hover:text-purple-400 transition-colors flex items-center gap-1 group">
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-    {/* Socials */}
-    <div>
-      <h3 className="text-xl font-semibold mb-2 text-indigo-300">Connect</h3>
-      <div className="flex gap-4 mt-3 text-lg text-gray-300">
-        <a href="#" className="hover:text-purple-400"><i className="fab fa-twitter"></i></a>
-        <a href="#" className="hover:text-purple-400"><i className="fab fa-github"></i></a>
-        <a href="#" className="hover:text-purple-400"><i className="fab fa-linkedin"></i></a>
-        <a href="#" className="hover:text-purple-400"><i className="fab fa-discord"></i></a>
+          <div>
+            <h4 className="text-white font-bold mb-6">Resources</h4>
+            <ul className="space-y-4">
+              {footerLinks.resources.map((link) => (
+                <li key={link.name}>
+                  <Link to={link.href} className="hover:text-purple-400 transition-colors">
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold mb-6">Company</h4>
+            <ul className="space-y-4">
+              {footerLinks.company.map((link) => (
+                <li key={link.name}>
+                  <Link to={link.href} className="hover:text-purple-400 transition-colors">
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        </div>
+
+        {/* BOTTOM BAR */}
+        <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
+          <p className="flex items-center gap-1">
+            © {currentYear} CodeSage. Made with <Heart size={14} className="text-red-500 fill-red-500" /> by Anubhaw.
+          </p>
+          
+          <div className="flex items-center gap-6">
+             <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-slate-400">All systems operational</span>
+             </div>
+          </div>
+        </div>
+
       </div>
-    </div>
-  </div>
+    </footer>
+  );
+};
 
-  {/* Copyright */}
-  <div className="mt-10 text-center text-sm text-gray-400 border-t border-gray-700 pt-4">
-    © {new Date().getFullYear()} CodeSage. All rights reserved.
-  </div>
-</footer>
-
-  )
-}
-
-export default Footer
+export default Footer;

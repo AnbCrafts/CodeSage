@@ -1,291 +1,262 @@
-import React from 'react'
-import HomeHeader from '../Components/HomeHeader'
-import { assets } from '../assets/assets'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { 
+  Code2, 
+  Cpu, 
+  FileText, 
+  Zap, 
+  ArrowRight, 
+  CheckCircle2, 
+  Terminal, 
+  UploadCloud, 
+  Settings, 
+  FileOutput, 
+  Users, 
+  GraduationCap, 
+  Briefcase 
+} from 'lucide-react';
+import HomeHeader from '../Components/HomeHeader';
+import { assets } from '../assets/assets';
 
 const Home = () => {
   return (
-    <div className=''>
-        <HomeHeader/>
+    <div className="bg-slate-950 min-h-screen text-slate-200 selection:bg-purple-500 selection:text-white">
+      <HomeHeader />
 
-     <div className='h-auto w-[90%] mx-auto relative  '>
-       
-<div className="text-center px-4 py-5 w-full h-auto mx-auto hero border  border-[#ee82ee4e] rounded-2xl">
-  
-  <h1 className="text-5xl md:text-6xl font-extrabold leading-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent drop-shadow-glow">
-    Understand Code Instantly with AI
-  </h1>
-  <p className="mt-2 text-xl md:text-xl text-white max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-    CodeSage helps you decode complex code into simple English, suggests improvements, and optimizes your code — all powered by intelligent AI, built for developers like you.
-  </p>
+      {/* ================= HERO SECTION ================= */}
+      <div className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        {/* Background Gradients */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] -z-10" />
+        <div className="absolute bottom-0 right-0 w-[800px] h-[600px] bg-indigo-600/10 rounded-full blur-[100px] -z-10" />
 
- 
-  
+        <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-purple-300 text-sm font-medium mb-8">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+            </span>
+            v2.0 is now live
+          </div>
 
-</div>
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
+            Understand Code <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
+              Instantly with AI
+            </span>
+          </h1>
 
-<div className='my-5 border border-[#ff00004c] rounded-2xl h-[80vh] w-full relative'>
-  <img src={assets.hero_bg} className=' object-cover rounded-2xl h-full w-full ' alt="" />
-  <div className='absolute top-0 h-full w-full bg-[#0000005d] flex items-baseline-last justify-baseline'>
-    <div className='p-10 bg-slate-900 rounded shadow shadow-[gray] max-w-[500px] m-10'>
-      <h1 className='text-4xl text-white py-2'>Upload your code and see <span className='text-indigo-400 py-1'>The Magic!!</span></h1>
-      <h1 className='text-2xl text-slate-300 mt-5 w-fit'>Let's get Stared</h1>
+          <p className="mt-4 text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            CodeSage decodes complex logic into plain English, suggests optimizations, 
+            and refactors your code — tailored for developers who want speed and clarity.
+          </p>
 
-      <Link to={'/analyze'} className='mt-3 rounded shadow block'>
-        <img src={assets.upload} className='h-[80px] w-[220px] rounded cursor-pointer' alt="" />
-      </Link>
+          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              to="/analyze"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-950 font-bold rounded-full hover:bg-slate-200 transition-all shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]"
+            >
+              Start Analyzing Free <ArrowRight size={18} />
+            </Link>
+            <a
+              href="#demo"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 text-white font-medium border border-white/10 rounded-full hover:bg-white/10 transition-all"
+            >
+              View Demo
+            </a>
+          </div>
+        </div>
+      </div>
 
-    </div>
+      {/* ================= INTERACTIVE DEMO (Mockup) ================= */}
+      <div className="max-w-6xl mx-auto px-6 mb-32 relative">
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-20" />
+        
+        <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-slate-900/50 backdrop-blur-xl group">
+          {/* Mock Browser Header */}
+          <div className="h-12 bg-slate-900/80 border-b border-white/5 flex items-center px-4 gap-2">
+            <div className="flex gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-red-500/80" />
+              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+              <div className="w-3 h-3 rounded-full bg-green-500/80" />
+            </div>
+            <div className="ml-4 px-3 py-1 bg-black/20 rounded text-xs text-slate-500 font-mono">codesage.ai/editor</div>
+          </div>
 
+          <div className="relative h-[400px] md:h-[600px] w-full flex items-center justify-center">
+             <img 
+               src={assets.hero_bg} 
+               alt="CodeSage Interface" 
+               className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-700" 
+             />
+             <div className="relative z-10 text-center">
+                <Link to="/analyze" className="inline-flex flex-col items-center gap-4 group/btn">
+                   <div className="w-20 h-20 bg-purple-600 rounded-full flex items-center justify-center shadow-lg shadow-purple-600/30 group-hover/btn:scale-110 transition-transform duration-300">
+                      <UploadCloud size={32} className="text-white" />
+                   </div>
+                   <span className="text-white font-semibold text-lg drop-shadow-md">Upload or Paste Code</span>
+                </Link>
+             </div>
+          </div>
+        </div>
+      </div>
 
-  </div>
-</div>
-
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-16 px-6 text-center text-slate-200">
-  
-  {/* Feature 1 */}
-  <div className="bg-[#0f172a]/50 backdrop-blur-sm rounded-2xl p-6 border border-indigo-500 shadow-lg hover:scale-105 transition">
-    <div className="text-4xl mb-4">🧠</div>
-    <h3 className="text-xl font-semibold">AI-Powered Understanding</h3>
-    <p className="mt-2 text-sm text-slate-400">Instantly explain any code in plain English using intelligent algorithms.</p>
-  </div>
-
-  {/* Feature 2 */}
-  <div className="bg-[#0f172a]/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500 shadow-lg hover:scale-105 transition">
-    <div className="text-4xl mb-4">⚙️</div>
-    <h3 className="text-xl font-semibold">Code Optimization</h3>
-    <p className="mt-2 text-sm text-slate-400">Get suggestions to shorten, refactor, and improve your code.</p>
-  </div>
-
-  {/* Feature 3 */}
-  <div className="bg-[#0f172a]/50 backdrop-blur-sm rounded-2xl p-6 border border-cyan-500 shadow-lg hover:scale-105 transition">
-    <div className="text-4xl mb-4">📄</div>
-    <h3 className="text-xl font-semibold">File Upload Support</h3>
-    <p className="mt-2 text-sm text-slate-400">Upload code files for batch analysis, summaries, and corrections.</p>
-  </div>
-
-  {/* Feature 4 */}
-  <div className="bg-[#0f172a]/50 backdrop-blur-sm rounded-2xl p-6 border border-fuchsia-500 shadow-lg hover:scale-105 transition">
-    <div className="text-4xl mb-4">🚀</div>
-    <h3 className="text-xl font-semibold">Instant Results</h3>
-    <p className="mt-2 text-sm text-slate-400">Blazing fast insights with clean UI and modern tools.</p>
-  </div>
-
-</div>
-
-
-
-<div className=" border border-[#ff000047] hover:shadow-2xl hover:shadow-[#ff000047] rounded-lg py-20 px-6 text-white text-center">
-  <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-    Try CodeSage Live
-  </h2>
-  <p className="text-slate-400 max-w-xl mx-auto mb-10">
-    Paste your code below and see how CodeSage transforms it into plain English explanations.
-  </p>
-  <div className="bg-slate-900 p-6 rounded-xl max-w-3xl mx-auto shadow-lg">
-    <textarea
-      className="w-full h-48 p-4 bg-slate-800 rounded-md text-white font-mono resize-none"
-      placeholder="Paste your code here..."
-    ></textarea>
-    <button className="mt-4 px-6 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg text-white font-semibold">
-      Explain Code
-    </button>
-  </div>
-</div>
-
-<div className=" text-white py-20 px-6 text-center">
-  <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-    How CodeSage Works
-  </h2>
-  <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-10">
-    <div className='border border-[#ff00006a] py-5 rounded-lg px-2'>
-      <div className="text-5xl mb-4 ">📥</div>
-      <h3 className="text-xl font-bold mb-2">1. Paste or Upload</h3>
-      <p className="text-slate-400">Drop your code into the editor or upload files directly.</p>
-    </div>
-    <div className='border border-[#ff00006a] py-5 rounded-lg px-2'>
-      <div className="text-5xl mb-4 ">⚙️</div>
-      <h3 className="text-xl font-bold mb-2">2. Choose Action</h3>
-      <p className="text-slate-400">Select what you want: Explain, Summarize, or Optimize.</p>
-    </div>
-    <div className='border border-[#ff00006a] py-5 rounded-lg px-2'>
-      <div className="text-5xl mb-4 ">📄</div>
-      <h3 className="text-xl font-bold mb-2">3. Get Instant Results</h3>
-      <p className="text-slate-400">View simplified, AI-generated output in seconds.</p>
-    </div>
-  </div>
-</div>
-
-<div className=" text-white py-20 px-6">
-  <h2 className="text-4xl font-bold text-center mb-10 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-    Who Is CodeSage For?
-  </h2>
-  <div className="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto">
-    <div className="text-center border border-[purple] rounded py-5 px-3">
-      <div className="text-5xl">👨‍🎓</div>
-      <h3 className="font-semibold mt-4">Students</h3>
-      <p className="text-slate-400">Grasp code logic faster while learning.</p>
-    </div>
-    <div className="text-center border border-[purple] rounded py-5 px-3">
-      <div className="text-5xl">🧑‍🏫</div>
-      <h3 className="font-semibold mt-4">Teachers</h3>
-      <p className="text-slate-400">Use AI to create easy-to-understand examples.</p>
-    </div>
-    <div className="text-center border border-[purple] rounded py-5 px-3">
-      <div className="text-5xl">👨‍💻</div>
-      <h3 className="font-semibold mt-4">Developers</h3>
-      <p className="text-slate-400">Quickly review or refactor code.</p>
-    </div>
-    <div className="text-center border border-[purple] rounded py-5 px-3">
-      <div className="text-5xl">🧪</div>
-      <h3 className="font-semibold mt-4">Interview Prep</h3>
-      <p className="text-slate-400">Understand tricky algorithms in simple terms.</p>
-    </div>
-  </div>
-</div>
-
-<div className=" text-white py-20 px-6 text-center hover:shadow-lg border border-[#ff000047]  ">
-  <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-    Why Choose CodeSage?
-  </h2>
-  <p className="text-slate-400 max-w-2xl mx-auto mb-10">
-    Unlike forums or documentation, CodeSage gives you real-time, personalized code explanations and enhancements — instantly.
-  </p>
-  <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-    <div className="p-6 rounded-xl bg-slate-800 shadow-lg">
-      <h3 className="font-bold text-xl mb-2">⏱️ Instant Response</h3>
-      <p className="text-slate-400">Get insights without waiting for community answers.</p>
-    </div>
-    <div className="p-6 rounded-xl bg-slate-800 shadow-lg">
-      <h3 className="font-bold text-xl mb-2">💡 AI-Level Understanding</h3>
-      <p className="text-slate-400">CodeSage reads like a human — only faster and smarter.</p>
-    </div>
-    <div className="p-6 rounded-xl bg-slate-800 shadow-lg">
-      <h3 className="font-bold text-xl mb-2">🔧 Practical Fixes</h3>
-      <p className="text-slate-400">From bugs to formatting, improve your code easily.</p>
-    </div>
-  </div>
-</div>
-
-
-<div className='py-5 mt-10'>
-<div className="text-center ">
-  <h2 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent drop-shadow-glow">
-    Supported Languages
-  </h2>
-  <p className="mt-2 text-slate-400 text-lg">From frontend to backend — we speak your language.</p>
-</div>
-
-  
-<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 py-10 px-6 text-center text-slate-200">
-  
-  {/* JavaScript */}
-  <div className="bg-[#0f172a]/50 backdrop-blur-sm rounded-2xl p-4 border border-yellow-400 shadow-lg hover:scale-105 transition">
-    <div className="text-3xl mb-2">🟨</div>
-    <p className="text-lg font-medium">JavaScript</p>
-  </div>
-
-  {/* Python */}
-  <div className="bg-[#0f172a]/50 backdrop-blur-sm rounded-2xl p-4 border border-green-400 shadow-lg hover:scale-105 transition">
-    <div className="text-3xl mb-2">🐍</div>
-    <p className="text-lg font-medium">Python</p>
-  </div>
-
-  {/* Java */}
-  <div className="bg-[#0f172a]/50 backdrop-blur-sm rounded-2xl p-4 border border-red-400 shadow-lg hover:scale-105 transition">
-    <div className="text-3xl mb-2">☕</div>
-    <p className="text-lg font-medium">Java</p>
-  </div>
-
-  {/* C++ */}
-  <div className="bg-[#0f172a]/50 backdrop-blur-sm rounded-2xl p-4 border border-blue-400 shadow-lg hover:scale-105 transition">
-    <div className="text-3xl mb-2">💠</div>
-    <p className="text-lg font-medium">C++</p>
-  </div>
-
-  {/* C */}
-  <div className="bg-[#0f172a]/50 backdrop-blur-sm rounded-2xl p-4 border border-sky-400 shadow-lg hover:scale-105 transition">
-    <div className="text-3xl mb-2">🔵</div>
-    <p className="text-lg font-medium">C</p>
-  </div>
-
-  {/* HTML/CSS */}
-  <div className="bg-[#0f172a]/50 backdrop-blur-sm rounded-2xl p-4 border border-pink-400 shadow-lg hover:scale-105 transition">
-    <div className="text-3xl mb-2">🌐</div>
-    <p className="text-lg font-medium">HTML & CSS</p>
-  </div>
-
-</div>
-</div>
-
-
-<div className="bg-[#0c0c3a] text-white py-20 px-6 text-center">
-  <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-    Plans & Pricing
-  </h2>
-  <p className="text-slate-400 max-w-xl mx-auto mb-10">
-    Simple, fair pricing to help you get started right away.
-  </p>
-  <div className="flex flex-col md:flex-row justify-center gap-8 max-w-4xl mx-auto">
-    <div className="p-6 rounded-xl bg-slate-800 shadow-lg w-full md:w-1/2">
-      <h3 className="text-2xl font-bold mb-2">🎉 Free Forever</h3>
-      <p className="text-slate-400 mb-4">Unlimited explanations for personal projects.</p>
-      <ul className="text-slate-300 mb-4 text-sm text-left list-disc pl-5">
-        <li>✔ Unlimited summaries</li>
-        <li>✔ Basic optimizations</li>
-        <li>✔ Community support</li>
-      </ul>
-      <button className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white font-semibold">
-        Start Free
-      </button>
-    </div>
-    <div className="p-6 rounded-xl bg-slate-900 shadow-lg w-full md:w-1/2 border border-indigo-600">
-      <h3 className="text-2xl font-bold mb-2">🚀 Coming Soon: Pro</h3>
-      <p className="text-slate-400 mb-4">Advanced tools for professionals and teams.</p>
-      <ul className="text-slate-300 mb-4 text-sm text-left list-disc pl-5">
-        <li>✔ Deep refactoring</li>
-        <li>✔ Priority AI processing</li>
-        <li>✔ Team dashboard</li>
-      </ul>
-      <button className="px-6 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white font-semibold">
-        Notify Me
-      </button>
-    </div>
-  </div>
-</div>
-
-
-<div className=" mt-10 text-white py-20 px-6 text-center border border-[#4c00827e]">
-  <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-    Stay in the Loop 📨
-  </h2>
-  <p className="text-slate-300 max-w-xl mx-auto mb-6">
-    Get updates on new features, tutorials, and releases straight to your inbox.
-  </p>
-  <div className="flex justify-center max-w-md mx-auto">
-    <input
-      type="email"
-      placeholder="Enter your email"
-      className="w-full px-4 py-2 rounded-l-lg text-black bg-white border-none outline-none"
-    />
-    <button className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-r-lg text-white font-semibold">
-      Subscribe
-    </button>
-  </div>
-</div>
-
-
-
-
-
-
-
+      {/* ================= FEATURES GRID ================= */}
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Supercharge your workflow</h2>
+          <p className="text-slate-400">Everything you need to write better code, faster.</p>
         </div>
 
-    
-      
-    </div>
-  )
-}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { icon: <Cpu className="text-indigo-400" />, title: "AI Understanding", desc: "Instantly explain logic in plain English." },
+            { icon: <Zap className="text-purple-400" />, title: "Optimization", desc: "Reduce complexity & improve Big O." },
+            { icon: <FileText className="text-cyan-400" />, title: "File Support", desc: "Upload full files for batch analysis." },
+            { icon: <Code2 className="text-pink-400" />, title: "Refactoring", desc: "Clean up messy code automatically." },
+          ].map((feature, i) => (
+            <div key={i} className="bg-slate-900/50 border border-white/5 p-8 rounded-2xl hover:bg-slate-800/50 hover:border-purple-500/30 transition-all duration-300 group">
+              <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                {feature.icon}
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">{feature.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
-export default Home
+      {/* ================= HOW IT WORKS ================= */}
+      <div className="py-24 bg-slate-900/30 border-y border-white/5">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white">How CodeSage Works</h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+
+            {[
+              { icon: <UploadCloud />, title: "1. Input", desc: "Paste code or upload a file." },
+              { icon: <Settings />, title: "2. Analyze", desc: "AI scans for logic & errors." },
+              { icon: <FileOutput />, title: "3. Result", desc: "Get explanation & optimization." },
+            ].map((step, i) => (
+              <div key={i} className="relative z-10 text-center">
+                <div className="w-24 h-24 mx-auto bg-slate-950 border-4 border-slate-900 rounded-full flex items-center justify-center text-purple-400 mb-6 shadow-xl relative">
+                   {step.icon}
+                   <div className="absolute inset-0 border border-white/10 rounded-full animate-pulse opacity-50" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">{step.title}</h3>
+                <p className="text-slate-400 text-sm max-w-xs mx-auto">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ================= LIVE EDITOR PREVIEW ================= */}
+      <div className="max-w-5xl mx-auto px-6 py-24">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            Try it Live
+          </h2>
+          <p className="text-slate-400 mt-2">Paste a snippet to see the magic happen.</p>
+        </div>
+
+        <div className="bg-slate-900 rounded-2xl border border-white/10 shadow-2xl p-1">
+          <div className="flex flex-col md:flex-row">
+            <textarea 
+              className="w-full md:w-2/3 h-64 p-6 bg-transparent text-slate-300 font-mono text-sm resize-none focus:outline-none placeholder:text-slate-600"
+              placeholder="// Paste your complex code here..."
+            ></textarea>
+            <div className="w-full md:w-1/3 bg-slate-950/50 p-6 border-t md:border-t-0 md:border-l border-white/10 flex flex-col justify-center gap-4">
+               <div className="text-xs text-slate-500 uppercase tracking-widest font-bold">Actions</div>
+               <button className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                 <Zap size={16} /> Optimize
+               </button>
+               <button className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                 <FileText size={16} /> Explain
+               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ================= USE CASES ================= */}
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <h2 className="text-3xl font-bold text-center text-white mb-12">Who uses CodeSage?</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { icon: <GraduationCap />, label: "Students", sub: "Learn logic faster" },
+            { icon: <Users />, label: "Teachers", sub: "Create examples" },
+            { icon: <Briefcase />, label: "Developers", sub: "Refactor daily" },
+            { icon: <Terminal />, label: "Interviewers", sub: "Check solutions" },
+          ].map((user, i) => (
+            <div key={i} className="p-6 bg-slate-900 border border-white/5 rounded-xl text-center hover:bg-slate-800 transition-colors">
+              <div className="text-purple-400 flex justify-center mb-4">{user.icon}</div>
+              <h3 className="font-bold text-white">{user.label}</h3>
+              <p className="text-xs text-slate-500 mt-1">{user.sub}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ================= PRICING ================= */}
+      <div className="max-w-5xl mx-auto px-6 py-24">
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* FREE PLAN */}
+          <div className="p-8 bg-slate-900 border border-white/10 rounded-3xl relative overflow-hidden group hover:border-purple-500/50 transition-colors">
+            <h3 className="text-2xl font-bold text-white mb-2">Hobby</h3>
+            <div className="text-4xl font-bold text-white mb-6">$0<span className="text-lg text-slate-500 font-normal">/mo</span></div>
+            <ul className="space-y-4 mb-8 text-slate-400">
+              {['Unlimited Explanations', 'Basic Optimization', 'Community Support'].map(feat => (
+                <li key={feat} className="flex items-center gap-3">
+                  <CheckCircle2 size={18} className="text-green-500" /> {feat}
+                </li>
+              ))}
+            </ul>
+            <button className="w-full py-3 border border-white/20 text-white rounded-xl hover:bg-white hover:text-slate-900 transition-all font-semibold">
+              Get Started
+            </button>
+          </div>
+
+          {/* PRO PLAN */}
+          <div className="p-8 bg-gradient-to-b from-indigo-900/20 to-slate-900 border border-indigo-500/30 rounded-3xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl">POPULAR</div>
+            <h3 className="text-2xl font-bold text-white mb-2">Pro</h3>
+            <div className="text-4xl font-bold text-white mb-6">TBD<span className="text-lg text-slate-500 font-normal">/mo</span></div>
+            <ul className="space-y-4 mb-8 text-slate-300">
+              {['Deep Refactoring', 'Priority Processing', 'Project Analysis', 'Early Access'].map(feat => (
+                <li key={feat} className="flex items-center gap-3">
+                  <CheckCircle2 size={18} className="text-indigo-400" /> {feat}
+                </li>
+              ))}
+            </ul>
+            <button className="w-full py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-500 transition-all font-semibold shadow-lg shadow-indigo-900/20">
+              Join Waitlist
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ================= NEWSLETTER ================= */}
+      <div className="max-w-3xl mx-auto px-6 pb-32 text-center">
+        <h2 className="text-2xl font-bold text-white mb-4">Stay updated</h2>
+        <p className="text-slate-400 mb-8">Get the latest AI coding tips straight to your inbox.</p>
+        <div className="flex max-w-md mx-auto relative">
+          <input 
+            type="email" 
+            placeholder="Enter your email" 
+            className="w-full pl-6 pr-32 py-4 bg-slate-900 border border-white/10 rounded-full text-white placeholder:text-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+          />
+          <button className="absolute right-2 top-2 bottom-2 px-6 bg-white text-slate-900 font-bold rounded-full hover:bg-slate-200 transition-colors">
+            Join
+          </button>
+        </div>
+      </div>
+
+    </div>
+  );
+};
+
+export default Home;

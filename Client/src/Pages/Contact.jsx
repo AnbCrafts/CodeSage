@@ -1,131 +1,159 @@
 import React, { useState } from 'react';
+import { 
+  Mail, 
+  MapPin, 
+  Phone, 
+  MessageSquare, 
+  Send, 
+  HelpCircle,
+  ChevronDown 
+} from 'lucide-react';
 import HomeHeader from '../Components/HomeHeader';
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [activeFAQ, setActiveFAQ] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  const faqs = [
+    { question: "Is CodeSage free to use?", answer: "Yes, our Hobby plan is completely free forever. Pro plans offer higher rate limits and advanced features." },
+    { question: "Is my code secure?", answer: "Absolutely. We process your code in real-time and do not store it on our servers after analysis." },
+    { question: "Can I use it for commercial projects?", answer: "Yes, CodeSage is designed to help professional developers in enterprise environments." }
+  ];
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // You can implement form submission logic here, like sending an email or saving the form data.
-    console.log(formData);
-  };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleSubmit = (e) => { e.preventDefault(); console.log(formData); };
 
   return (
-    <div>
-        <HomeHeader/>
-        <section className=" text-white py-5 px-6">
-      <div className="max-w-7xl mx-auto text-center">
-        {/* Title */}
-        <h2 className="text-4xl font-semibold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
-          Contact Us
-        </h2>
-        <p className="text-lg text-gray-300 mb-12 py-5 rounded-2xl border border-[#ee82ee27]">Have questions or feedback? We’d love to hear from you. Fill out the form below or reach us through the contact details provided.</p>
+    <div className="bg-slate-950 min-h-screen text-slate-200 font-sans selection:bg-purple-500 selection:text-white">
+      <HomeHeader />
+
+      {/* ================= HERO SECTION ================= */}
+      <section className="relative pt-32 pb-20 px-6 lg:px-8 text-center overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] -z-10" />
         
-        {/* Contact Form */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <form onSubmit={handleSubmit} className="bg-[#0c0c3a] p-8 rounded-xl shadow-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label htmlFor="name" className="text-white font-medium">Full Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full mt-2 p-3 rounded-md bg-[#1e3a8a] text-white"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="text-white font-medium">Email Address</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full mt-2 p-3 rounded-md bg-[#1e3a8a] text-white"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <label htmlFor="message" className="text-white font-medium">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                className="w-full mt-2 p-3 rounded-md bg-[#1e3a8a] text-white"
-                rows="5"
-                required
-              />
-            </div>
-
-            <button type="submit" className="w-full p-3 bg-indigo-400 text-white rounded-md hover:bg-indigo-500 transition-all">
-              Send Message
-            </button>
-          </form>
+        <div className="max-w-3xl mx-auto relative z-10">
+          <h2 className="text-sm font-bold text-purple-400 uppercase tracking-widest mb-4">Support & Feedback</h2>
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+            We'd love to hear from you.
+          </h1>
+          <p className="text-lg text-slate-400 leading-relaxed">
+            Whether you have a question about features, pricing, or just want to say hello, our team is ready to answer all your questions.
+          </p>
         </div>
+      </section>
 
-        {/* Contact Details */}
-        <div className="mb-16">
-          <h3 className="text-3xl font-semibold text-indigo-400 mb-4">Reach Us Directly</h3>
-          <div className="max-w-3xl mx-auto space-y-4 border border-[#ff000070] p-10 rounded-2xl">
-            <div className="flex items-center space-x-4">
-              <div className="text-2xl text-indigo-400">📧</div>
-              <div className="text-lg text-gray-300  py-2">Email: <a href="mailto:contact@codesage.com" className="text-indigo-400 hover:underline">contact@codesage.com</a></div>
+      {/* ================= CONTACT GRID ================= */}
+      <section className="px-6 lg:px-8 pb-32">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+          
+          {/* LEFT: INFO & FAQ */}
+          <div>
+            <div className="grid gap-8 mb-16">
+              {[
+                { icon: <Mail />, title: "Email Us", desc: "support@codesage.ai", sub: "For general inquiries" },
+                { icon: <MessageSquare />, title: "Live Chat", desc: "Start a conversation", sub: "Available 9am-5pm EST" },
+                { icon: <MapPin />, title: "Office", desc: "San Francisco, CA", sub: "123 Market St, Suite 400" }
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-slate-900 border border-white/10 rounded-xl flex items-center justify-center text-purple-400 flex-shrink-0">
+                    {item.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white">{item.title}</h3>
+                    <p className="text-slate-300 font-medium">{item.desc}</p>
+                    <p className="text-slate-500 text-sm">{item.sub}</p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="text-2xl text-indigo-400">📞</div>
-              <div className="text-lg text-gray-300 py-2">Phone: <a href="tel:+1234567890" className="text-indigo-400 hover:underline">+1 234 567 890</a></div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="text-2xl text-indigo-400">🌐</div>
-              <div className="text-lg text-gray-300  py-2">Website: <a href="/" className="text-indigo-400 hover:underline">www.codesage.com</a></div>
+            {/* FAQ Accordion */}
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <HelpCircle size={24} className="text-purple-400" /> FAQ
+              </h3>
+              <div className="space-y-4">
+                {faqs.map((faq, i) => (
+                  <div 
+                    key={i} 
+                    onClick={() => setActiveFAQ(activeFAQ === i ? null : i)}
+                    className="border border-white/5 bg-slate-900/50 rounded-xl overflow-hidden cursor-pointer hover:border-purple-500/30 transition-colors"
+                  >
+                    <div className="p-4 flex justify-between items-center">
+                      <span className="font-medium text-slate-300">{faq.question}</span>
+                      <ChevronDown 
+                        size={18} 
+                        className={`text-slate-500 transition-transform duration-300 ${activeFAQ === i ? 'rotate-180' : ''}`} 
+                      />
+                    </div>
+                    <div className={`px-4 pb-4 text-slate-400 text-sm leading-relaxed transition-all duration-300 ${activeFAQ === i ? 'block' : 'hidden'}`}>
+                      {faq.answer}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* FAQ Section */}
-        <div>
-          <h3 className="text-3xl font-semibold text-indigo-400 mb-4">Frequently Asked Questions</h3>
-          <div className="space-y-6">
-            <div className="text-lg text-gray-300 border border-[#0000ff5e] hover:border-[blue] transition-all py-5 rounded-lg">
-              <p className="font-semibold">What services do you offer?</p>
-              <p>We provide an AI-powered platform for code review, debugging, explanation, and optimization.</p>
-            </div>
+          {/* RIGHT: CONTACT FORM */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/20 to-indigo-600/20 rounded-3xl blur-xl -z-10" />
+            <div className="bg-slate-900 border border-white/10 p-8 md:p-10 rounded-3xl shadow-2xl">
+              <h3 className="text-2xl font-bold text-white mb-6">Send a message</h3>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-400">First Name</label>
+                    <input 
+                      type="text" name="name" 
+                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                      placeholder="John"
+                      value={formData.name} onChange={handleChange} required 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-400">Last Name</label>
+                    <input 
+                      type="text" 
+                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                      placeholder="Doe"
+                    />
+                  </div>
+                </div>
 
-            <div className="text-lg text-gray-300 border border-[#0000ff5e] hover:border-[blue] transition-all py-5 rounded-lg">
-              <p className="font-semibold">How can I contact support?</p>
-              <p>You can contact us through the contact form above or email us at contact@codesage.com.</p>
-            </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-400">Email Address</label>
+                  <input 
+                    type="email" name="email"
+                    className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                    placeholder="john@company.com"
+                    value={formData.email} onChange={handleChange} required 
+                  />
+                </div>
 
-            <div className="text-lg text-gray-300 border border-[#0000ff5e] hover:border-[blue] transition-all py-5 rounded-lg">
-              <p className="font-semibold">Do you support multiple languages?</p>
-              <p>Yes, our platform supports multiple programming languages including Python, JavaScript, Java, and more.</p>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-400">Message</label>
+                  <textarea 
+                    name="message" rows="4"
+                    className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors resize-none"
+                    placeholder="How can we help you?"
+                    value={formData.message} onChange={handleChange} required 
+                  />
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-purple-900/20 flex items-center justify-center gap-2"
+                >
+                  <Send size={18} /> Send Message
+                </button>
+              </form>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
 
+        </div>
+      </section>
 
     </div>
   );
