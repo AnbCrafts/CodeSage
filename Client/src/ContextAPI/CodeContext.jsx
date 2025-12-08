@@ -5,7 +5,7 @@ export const CodeContext = createContext();
 
 export const CodeContextProvider = ({ children }) => {
 
-        const backendURI = "http://localhost:9000/api/code";
+        const backendURI = "https://codesage-03cc.onrender.com";
 
 
       const [processInput,setProcessInput] = useState(false);
