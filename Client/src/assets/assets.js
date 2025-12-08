@@ -11,12 +11,18 @@ import up from './up.png'
 import down from './down.png'
 import serviceBg from './serviceBg.webp';
 
-export const assets = {
+import home from './home.png'
+import landing from './landing.png'
+import login_ from './login.png'
+import editor from './editor.png'
+import pricing from './pricing.png'
 
+export const assets = {
+pricing,editor,login_,landing,home,
     logo,
     login,signup,
     upload,
-    hero,
+    hero, 
     bg,
     top,
     hero_bg,
