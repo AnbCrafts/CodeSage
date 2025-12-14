@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { 
   Code2, 
   Cpu, 
@@ -17,13 +17,31 @@ import {
 } from 'lucide-react';
 import HomeHeader from '../Components/HomeHeader';
 import { assets } from '../assets/assets';
+import Dashboard from '../Components/Dashboard';
+import Templates from './Teamplates';
 
 const Home = () => {
+  const {secureHash} = useParams();
+  const url = secureHash?`/code-sage/${secureHash}/analyze`:'/login'
   return (
     <div className="bg-slate-950 min-h-screen text-slate-200 selection:bg-purple-500 selection:text-white">
       <HomeHeader />
 
+      {
+        secureHash &&
+        <div>
+          <Dashboard/>
+          <Templates/>
+
+        </div>
+      }
+
+
       {/* ================= HERO SECTION ================= */}
+      {
+        !secureHash &&
+        <div>
+          
       <div className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
         {/* Background Gradients */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] -z-10" />
@@ -52,7 +70,7 @@ const Home = () => {
 
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/analyze"
+              to={`${url}`}
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-950 font-bold rounded-full hover:bg-slate-200 transition-all shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]"
             >
               Start Analyzing Free <ArrowRight size={18} />
@@ -89,7 +107,7 @@ const Home = () => {
                className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-700" 
              />
              <div className="relative z-10 text-center">
-                <Link to="/analyze" className="inline-flex flex-col items-center gap-4 group/btn">
+                <Link to={url} className="inline-flex flex-col items-center gap-4 group/btn">
                    <div className="w-20 h-20 bg-purple-600 rounded-full flex items-center justify-center shadow-lg shadow-purple-600/30 group-hover/btn:scale-110 transition-transform duration-300">
                       <UploadCloud size={32} className="text-white" />
                    </div>
@@ -254,6 +272,11 @@ const Home = () => {
           </button>
         </div>
       </div>
+
+        </div>
+
+      }
+
 
     </div>
   );

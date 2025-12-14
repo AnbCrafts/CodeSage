@@ -1,141 +1,191 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export const CodeContext = createContext();
 
 export const CodeContextProvider = ({ children }) => {
 
-        const backendURI = "https://codesage-03cc.onrender.com";
+  // Ensure this port matches your Server (5000 or 9000)
+  const backendURI = "http://localhost:9000/api"; 
+  const navigate = useNavigate();
 
+  const [input, setInput] = useState("");
+  const [result, setResult] = useState(""); // Default to empty string, not null
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-      const [processInput,setProcessInput] = useState(false);
-      const [input,setInput] = useState("");
-      const [explanation,setExplanation] = useState("");
-      const [suggestedCode,setSuggestedCode] = useState("");
-      const [trimmedCode,setTrimmedCode] = useState("");
-      const [summarizedCode,setSummarizedCode] = useState("");
-    
-    
-      const [isLoading, setIsLoading] = useState(false);
-      const [error, setError] = useState("");
-    
-      const handleCopyExplanation = async () => {
-        try {
-          await navigator.clipboard.writeText(explanation);
-          alert('Explanation copied to clipboard!'); // Optional: Provide user feedback
-        } catch (err) {
-          console.error('Failed to copy text: ', err);
-          alert('Failed to copy explanation.'); // Optional: Inform the user of the error
+  const [currUserData,setCurrUserData] = useState(null);
+  const [userChats,setUserChats] = useState([]);
+  const register = async (formData, path) => {
+  try {
+    if (!formData) {
+      toast.warn("User data is required");
+      return;
+    }
+
+    const response = await axios.post(
+      `${backendURI}/user/${path}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response || !response.data?.success) {
+      toast.error("Authentication failed");
+      return;
+    }
+
+    const userData = response.data.data;
+
+    setCurrUserData(userData);
+
+    localStorage.setItem("userId", userData._id);
+    localStorage.setItem("username", userData.username);
+    localStorage.setItem("token", userData.token);
+    localStorage.setItem("secureHash", userData.secureHash);
+
+    navigate(`/code-sage/${userData.secureHash}`);
+  } catch (error) {
+    console.error(error);
+    toast.error(error?.response?.data?.message || "Something went wrong");
+  }
+};
+
+const [userInfo,setUserInfo] = useState(null);
+const getInfo = async()=>{
+      try {
+        const response = await axios.get(`${backendURI}/user/info`,{headers:{
+          Authorization:`Bearer ${localStorage.getItem("token")}`
+        }})
+
+        if(response && response.data.success){
+          const data = response.data.userData;
+          setUserInfo(data);
+        }else{
+          toast.error("No response or negative response from server")
         }
-      };
-    
-      const handleSaveAsTxt = () => {
-        const filename = 'explanation.txt';
-        const text = explanation;
-      
-        const element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-        element.setAttribute('download', filename);
-      
-        element.style.display = 'none';
-        document.body.appendChild(element);
-      
-        element.click();
-      
-        document.body.removeChild(element);
-      };
+        
+      } catch (error) {
+        toast.error(error.message);
+      }
+}
 
-      const getExplanation = async () => {
-          setIsLoading(true);
-          setError("");
-          try {
-            const response = await axios.post(`${backendURI}/explain`, { code: input }); // Send input as an object
-            if (response.data.success) {
-              setExplanation(response.data.explanation);
-            } else {
-              console.log("Cannot get response");
-              setError("Failed to get explanation from the server.");
-            }
-          } catch (error) {
-            console.error("Error fetching explanation:", error);
-            setError("An error occurred while fetching the explanation.");
-          } finally {
-            setIsLoading(false);
-          }
-        };
-      const getSuggestion = async () => {
-          setIsLoading(true);
-          setError("");
-          try {
-            const response = await axios.post(`${backendURI}/suggest`, { code: input }); // Send input as an object
-            if (response.data.success) {
-              setSuggestedCode(response.data.suggestion);
-            } else {
-              console.log("Cannot get response");
-              setError("Failed to get suggestion from the server.");
-            }
-          } catch (error) {
-            console.error("Error fetching suggestion:", error);
-            setError("An error occurred while fetching the suggestion.");
-          } finally {
-            setIsLoading(false);
-          }
-        };
+const {secureHash} = useParams();
+useEffect(() => {
+  if (!secureHash) return;
 
-        const getTrimmedCode = async () => {
-          setIsLoading(true);
-          setError("");
-          try {
-            const response = await axios.post(`${backendURI}/trim`, { code: input }); // Send input as an object
-            if (response.data.success) {
-              setSuggestedCode(response.data.trimmed);
-            } else {
-              console.log("Cannot get response");
-              setError("Failed to get trimmed code from the server.");
-            }
-          } catch (error) {
-            console.error("Error fetching trimmed code:", error);
-            setError("An error occurred while fetching the trimmed code.");
-          } finally {
-            setIsLoading(false);
-          }
-        };
+  const token = localStorage.getItem("token");
+  if (!token) return;
 
-        const getSummary = async () => {
-          setIsLoading(true);
-          setError("");
-          try {
-            const response = await axios.post(`${backendURI}/summarize`, { code: input }); // Send input as an object
-            if (response.data.success) {
-              setSuggestedCode(response.data.summary);
-            } else {
-              console.log("Cannot get response");
-              setError("Failed to get summarized code from the server.");
-            }
-          } catch (error) {
-            console.error("Error fetching summarized code:", error);
-            setError("An error occurred while fetching the summarized code.");
-          } finally {
-            setIsLoading(false);
-          }
-        };  
+  getInfo();
+}, [secureHash]);
 
+
+const handleCode = async (data) => {
+  if (!data || !data.code) {
+    toast.error("Please provide code to analyze.");
+    return;
+  }
+
+  setIsLoading(true);
+  setResult("");
+
+  try {
+    const response = await axios.post(
+      `${backendURI}/code/analyze`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    const aiResult = response.data?.data?.result;
+
+    if (aiResult) {
+      setResult(aiResult);
+    } else {
+      console.log("Unexpected response shape:", response.data);
+      toast.error("No response received from AI.");
+    }
+
+  } catch (err) {
+    console.error(err);
+    toast.error(err.response?.data?.message || "Analysis failed.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+const getUserChats = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const response = await axios.get(
+      `${backendURI}/user/chats`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.data?.success) {
+      // console.log("reponse for chats - ", response)
+      setUserChats(response.data.data); // 🔥 FIX
+    } else {
+      toast.error("Failed to fetch chats");
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to load chats");
+  }
+};
+
+
+
+
+  // --- UTILITIES ---
+  const handleCopyExplanation = async () => {
+    if (!result) return toast.info("Nothing to copy!");
+    try {
+      await navigator.clipboard.writeText(result);
+      toast.success('Copied to clipboard!');
+    } catch (err) {
+      toast.error('Failed to copy.');
+    }
+  };  
+
+  const handleSaveAsTxt = () => {
+    if (!result) return toast.info("Nothing to save!");
+    const filename = 'codesage_analysis.txt';
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(result));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
 
   const codeContextValue = {
-    handleSaveAsTxt,
-    handleCopyExplanation,
-    processInput,setProcessInput,
-    input,setInput,
-    suggestedCode,setSuggestedCode,
-    explanation,setExplanation,
-    trimmedCode,setTrimmedCode,
-    summarizedCode,setSummarizedCode,
-    isLoading,
-    error,
-    getExplanation,getSuggestion,getSummary,getTrimmedCode
-
-    
+    input, setInput,
+    isLoading, error,
+    handleCode, result,
+    handleCopyExplanation, handleSaveAsTxt,register,currUserData,getInfo,userInfo,getUserChats,userChats
   };
+
+
+
+ 
 
   return (
     <CodeContext.Provider value={codeContextValue}>

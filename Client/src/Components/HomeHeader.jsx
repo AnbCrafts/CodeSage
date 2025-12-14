@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { assets } from '../assets/assets';
+import { CodeContext } from '../ContextAPI/CodeContext';
+import UserDropdown from './UserDropdown';
 
 // --- LOGO COMPONENT ---
 const Logo = () => {
+  const {secureHash} = useParams();
+const basePath = secureHash?`/code-sage/${secureHash}`:"/"
+
   return (
-    <Link to={'/'} className="flex items-center gap-2 group cursor-pointer">
+    <Link to={`${basePath}`} className="flex items-center gap-2 group cursor-pointer">
       <div className="relative w-10 h-10 overflow-hidden rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 p-[1px] shadow-lg shadow-purple-500/20 group-hover:shadow-purple-500/40 transition-all duration-300">
         <div className="w-full h-full bg-slate-950 rounded-xl flex items-center justify-center overflow-hidden">
            <img 
@@ -28,14 +33,43 @@ const Logo = () => {
 const HomeHeader = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const {userInfo} = useContext(CodeContext);
+  const {secureHash} = useParams();
+  const username = localStorage.getItem("username");
 
-  const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Services', path: '/services' },
-    { name: 'About', path: '/about' },
-    { name: 'Contact', path: '/contact' },
-    { name: 'Help', path: '/help' },
-  ];
+  const basePath = secureHash ? `/code-sage/${secureHash}` : "";
+
+const navLinks = [
+  { name: "Home", path: secureHash ? basePath : "/" },
+  { name: "AI", path: `${basePath}/analyze` },
+  { name: "Services", path: `${basePath}/services` },
+  { name: "About", path: `${basePath}/about` },
+  { name: "Contact", path: `${basePath}/contact` },
+  { name: "Help", path: `${basePath}/help` },
+];
+
+
+
+
+
+
+useEffect(()=>{
+  console.log(userInfo);
+},[userInfo])
+
+
+const navigate = useNavigate();
+const handleLogout = () => {
+    // 1. Clear Local Storage
+    localStorage.removeItem("token");
+    localStorage.removeItem("userInfo");
+    localStorage.removeItem("secureHash");
+    
+
+    navigate("/login");
+    window.location.reload(); // Optional: Force reload to clear state cleanly
+  };
+  
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/5">
@@ -70,13 +104,24 @@ const HomeHeader = () => {
 
         {/* RIGHT: AUTH BUTTONS */}
         <div className="hidden md:flex items-center gap-4">
-          <Link
+          {
+            secureHash &&username
+            ?
+            (
+              <UserDropdown user={username} onLogout={handleLogout} />
+            )
+            :
+            (<Link
             to="/login"
             className="group relative inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-950 text-sm font-semibold rounded-full hover:bg-purple-50 transition-all shadow-lg hover:shadow-purple-500/20 active:scale-95"
           >
             Get Started
             <ArrowRight size={16} className="text-purple-600 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+          </Link>)
+          }
+          
+
+
         </div>
 
         {/* MOBILE MENU TOGGLE */}

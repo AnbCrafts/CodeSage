@@ -1,30 +1,31 @@
 import express from 'express';
 import dotenv ,{configDotenv} from 'dotenv'
 import cors from 'cors';
-import explanationRoutes from './src/Routes/Explain.route.js';
-import analyzeRoutes from './src/Routes/Analyze.route.js';
-import suggestionRoutes from './src/Routes/Suggestion.route.js';
-import trimmedRoutes from './src/Routes/Trim.route.js';
+import CodeRouter from './src/Routes/Code.Route.js';
+import connectDB from './src/DB/ConnectDB.js';
+import UserRouter from './src/Routes/User.Routes.js';
 
 
 
 configDotenv();
+connectDB();
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded()); 
+app.use(express.urlencoded({extended:true})); 
 app.use(cors());
+
+
 
  
 
 const port = process.env.PORT;
 
-app.use('/api/code',explanationRoutes);
-app.use('/api/code',analyzeRoutes);
-app.use('/api/code',suggestionRoutes);
-app.use('/api/code',trimmedRoutes);
+app.use("/api/user",UserRouter);
+app.use('/api/code',CodeRouter);
 
+ 
 app.get('/',(req,res)=>{
     res.send("Server Started Successfully, you are in the homepage...")
 })
