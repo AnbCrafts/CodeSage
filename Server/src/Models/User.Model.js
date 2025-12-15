@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
       default: 0
     }
   },
+  
   subscription: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Subscription'

@@ -18,12 +18,15 @@ const Analyze = () => {
     handleSaveAsTxt,
     handleCopyExplanation,
     handleCode,
-    result, setResult, // Ensure setResult is exported from your ContextProvider
+    result, setResult,
     userChats, getUserChats
   } = useContext(CodeContext); 
 
   const [activeTab, setActiveTab] = useState("summary");
   
+  // --- STATE TO TRACK CURRENT CHAT ID ---
+  const [currentChatId, setCurrentChatId] = useState(null);
+
   // --- EXPANSION STATES ---
   const [leftExpanded, setLeftExpanded] = useState(false);
   const [rightExpanded, setRightExpanded] = useState(false);
@@ -38,11 +41,19 @@ const Analyze = () => {
     if (actionType === "trim") backendAction = "Trim";
 
     setActiveTab(actionType);
-    await handleCode({ code: input, action: backendAction });
+
+    // Pass the chatId (if it exists) to update the existing record
+    // If currentChatId is null, the backend should create a new one
+    await handleCode({ 
+      code: input, 
+      action: backendAction, 
+      chatId: currentChatId 
+    });
   };
 
   const handleSelectChat = (chat) => {
     setInput(chat.code);
+    setCurrentChatId(chat._id); // <--- Set the ID so we update this chat next time
     
     if (setResult) {
         setResult(chat.result);
@@ -60,6 +71,13 @@ const Analyze = () => {
     if (window.innerWidth < 768) {
         setIsHistoryOpen(false);
     }
+  };
+
+  // --- RESET HANDLER ---
+  const handleClearEditor = () => {
+    setInput("");           // Clear text
+    setResult(null);        // Clear result
+    setCurrentChatId(null); // Clear ID (Next run = New Chat)
   };
 
   const handleEditorDidMount = (editor, monaco) => {
@@ -127,10 +145,21 @@ const Analyze = () => {
             <div className="w-3 h-3 rounded-full bg-yellow-500" />
             <div className="w-3 h-3 rounded-full bg-green-500" />
             <span className="ml-4 text-sm font-mono text-slate-400">editor.js</span>
+            
+            {/* Optional: Indicator to show if we are editing an existing chat */}
+            {currentChatId && (
+               <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded border border-purple-500/30">
+                 Editing Chat
+               </span>
+            )}
           </div>
 
           <div className="flex gap-2">
-            <button onClick={() => setInput("")} className="p-2 text-slate-400 hover:text-red-400 hover:bg-white/5 rounded-lg transition-colors" title="Clear Editor">
+            <button 
+              onClick={handleClearEditor} 
+              className="p-2 text-slate-400 hover:text-red-400 hover:bg-white/5 rounded-lg transition-colors" 
+              title="Clear Editor & Start New"
+            >
               <Trash2 size={18} />
             </button>
             <button className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-lg transition-all shadow-lg shadow-purple-900/20"
@@ -138,7 +167,7 @@ const Analyze = () => {
               disabled={isLoading}
             >
               {isLoading ? <Loader2 className="animate-spin" size={16}/> : <Play size={16} fill="currentColor" />}
-              Run Analysis
+              {currentChatId ? "Update Analysis" : "Run Analysis"}
             </button>
           </div>
         </div>

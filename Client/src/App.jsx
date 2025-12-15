@@ -10,6 +10,7 @@ import Login from './Pages/Login'
 import Analyze from './Pages/Analyze'
 import Settings from './Pages/Settings'
 import Templates from './Pages/Teamplates'
+import Pricing from './Pages/Pricing'
 
   
 const App = () => {
@@ -35,7 +36,7 @@ const App = () => {
     <Route path="help" element={<Help />} />
     <Route path="analyze" element={<Analyze />} />
     <Route path='settings' element={<Settings/>} />
-    {/* <Route path='templates' element={<Templates/>} /> */}
+    <Route path='pricing' element={<Pricing/>} />
   </Route>
 </Routes>
 

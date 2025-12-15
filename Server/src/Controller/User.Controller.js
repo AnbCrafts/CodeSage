@@ -126,7 +126,7 @@ export const getUserData = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
   const user = await UserModel.findById(userId).select(
-    "_id username email createdAt"
+    "_id username email createdAt usage"
   );
 
   if (!user) {

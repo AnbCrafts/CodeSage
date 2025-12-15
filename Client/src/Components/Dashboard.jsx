@@ -7,7 +7,7 @@ import HomeHeader from '../Components/HomeHeader';
 import { CodeContext } from '../ContextAPI/CodeContext';
 
 const Dashboard = () => {
-  const { userChats, getUserChats } = useContext(CodeContext);
+  const { userChats, getUserChats,getInfo,userInfo } = useContext(CodeContext);
   const {secureHash} = useParams();
   // Mock User Data (Replace with real context later)
   const user = JSON.parse(localStorage.getItem("userInfo")) || { username: "Developer", isPro: false };
@@ -18,7 +18,14 @@ const Dashboard = () => {
 
   useEffect(() => {
     getUserChats();
+    getInfo();
   }, []);
+
+
+
+  useEffect(()=>{
+    console.log("UserInfo", userInfo);
+  },[userInfo])
 
 
   const username = localStorage.getItem("username")
@@ -94,7 +101,7 @@ const Dashboard = () => {
               {!user.isPro && (
                 <p className="text-xs text-slate-500 mt-3 flex items-center gap-1">
                   <Zap size={12} className="text-yellow-500" /> 
-                  <Link to="/pricing" className="hover:text-purple-400 hover:underline">Upgrade for unlimited access</Link>
+                  <Link to={`/code-sage/${secureHash}/pricing`} className="hover:text-purple-400 hover:underline">Upgrade for unlimited access</Link>
                 </p>
               )}
             </div>
@@ -151,7 +158,7 @@ const Dashboard = () => {
                </p>
              </div>
              <Link 
-               to="/pricing"
+               to={`/code-sage/${secureHash}/pricing`}
                className="relative z-10 px-6 py-3 bg-white text-slate-950 font-bold rounded-lg hover:bg-purple-50 transition-colors shadow-lg"
              >
                View Plans

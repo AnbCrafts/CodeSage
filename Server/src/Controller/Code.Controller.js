@@ -27,7 +27,8 @@ const extractTitleHint = (code) => {
 
 
 export const analyzeCode = asyncHandler(async (req, res) => {
-  const { code, action,chatId } = req.body;
+  const { code, action, chatId } = req.body;
+  // Fallback to body.userId only if middleware fails (unlikely if setup correctly)
   const userId = req.user?._id || req.body.userId; 
 
   if (!userId) {
@@ -38,9 +39,31 @@ export const analyzeCode = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No code provided");
   }
 
-  let systemPrompt = "";
+  // --- 1. DAILY LIMIT CHECK ---
+  const today = new Date().toISOString().split('T')[0];
 
-  switch (action) {
+  // Initialize usage if missing
+  if (!req.user.usage) {
+     req.user.usage = { date: today, count: 0 };
+  }
+
+  if (req.user.usage.date !== today) {
+    req.user.usage.date = today;
+    req.user.usage.count = 0;
+    await req.user.save(); // Save the reset immediately
+  }
+
+  if (!req.user.isPro && req.user.usage.count >= 50) {
+    return res.status(402).json({
+        success: false, 
+        message: "Daily limit reached (50/50). Upgrade to Pro for unlimited access."
+    });
+  }
+
+  // --- 2. SELECT SYSTEM PROMPT ---
+  let systemPrompt = "";
+ 
+ switch (action) {
     case "Summarize":
       systemPrompt = `
 You are an elite senior software engineer.
@@ -144,6 +167,7 @@ Critical rules:
       throw new ApiError(400, "Invalid action");
   }
 
+  // --- 3. CALL AI ---
   const completion = await groq.chat.completions.create({
     messages: [
       { role: "system", content: systemPrompt },
@@ -168,42 +192,47 @@ Critical rules:
     Trim: "Refactored",
   }[action]}: ${titleHint}`.slice(0, 50);
 
+  // --- 4. DATABASE UPDATE LOGIC ---
+  let chat;
 
+  if (chatId) {
+    // 🔒 Update existing chat
+    chat = await ChatModel.findOneAndUpdate(
+      { _id: chatId, userId },
+      {
+        title,
+        code,
+        action,
+        result,
+      },
+      { new: true }
+    );
 
-let chat;
-
-if (chatId) {
-  // 🔒 Update existing chat (only if it belongs to the user)
-  chat = await ChatModel.findOneAndUpdate(
-    { _id: chatId, userId },
-    {
+    if (!chat) {
+      throw new ApiError(404, "Chat not found or access denied");
+    }
+    
+    // Increment usage for updates too
+    await UserModel.findByIdAndUpdate(userId, { $inc: { "usage.count": 1 } });
+    
+  } else {
+    // 🆕 Create new chat
+    chat = await ChatModel.create({
       title,
+      userId,
       code,
       action,
       result,
-    },
-    { new: true }
-  );
+    });
 
-  if (!chat) {
-    throw new ApiError(404, "Chat not found or access denied");
+    await UserModel.findByIdAndUpdate(userId, {
+      $push: { chats: chat._id },
+      $inc: { "usage.count": 1 } 
+    });
   }
-} else {
-  // 🆕 Create new chat
-  chat = await ChatModel.create({
-    title,
-    userId,
-    code,
-    action,
-    result,
-  });
 
-  await UserModel.findByIdAndUpdate(userId, {
-    $push: { chats: chat._id },
-  });
-}
-
-
+  // --- 5. SEND RESPONSE (MOVED OUTSIDE) ---
+  // Now this runs for BOTH new chats and updates!
   return handleResponse(res, 200, "Code analyzed successfully", {
     chatId: chat._id,
     title,
@@ -211,3 +240,6 @@ if (chatId) {
     result,
   });
 });
+
+
+
