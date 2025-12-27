@@ -14,7 +14,7 @@ import HomeHeader from '../Components/HomeHeader';
 
 const Services = () => {
   
-  const servicesList = [
+  const servicesList = [ 
     {
       icon: <Bug size={28} />,
       title: "Code Review & Debugging",

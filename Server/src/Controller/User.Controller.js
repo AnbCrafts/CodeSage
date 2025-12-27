@@ -125,33 +125,32 @@ const getChats = asyncHandler(async (req, res) => {
 export const getUserData = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
-  const user = await UserModel.findById(userId).select(
-    "_id username email createdAt usage"
-  );
+  const user = await UserModel.findById(userId)
+    .select("username email createdAt usage chats isPro") // Make sure to select 'chats'
+    .populate({
+      path: "chats",
+      select: "title result code action language createdAt", // Select fields from ChatModel
+      options: { sort: { createdAt: -1 } } // Optional: Sort by newest first
+    });
 
   if (!user) {
     throw new ApiError(404, "User not found");
   }
- const chats = [];
- if(user && user.chats && user.chats.length){
-  await Promise.all(
-    user.chats.map(async(c)=>{
-        const chat = await ChatModel.findById(c).select("title result code action language createdAt");
-        chats.push(chat);
-    })
-  )
- }
-  const userData = {
-    username:user.username,
-    email:user.email,
-    chats
 
-  }
+  const userData = {
+    username: user.username,
+    email: user.email,
+    usage: user.usage, // You fetched it, so you should probably return it
+    createdAt: user.createdAt,
+    chats: user.chats || [], // This is now an array of full chat objects
+    isPro:user.isPro
+  };
+
   return handleResponse(res, 200, "User data fetched", userData);
 });
 
 
-
+ 
 
 
 

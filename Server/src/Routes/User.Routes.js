@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { getChats, login, register } from '../Controller/User.Controller.js';
+import { getChats, getUserData, login, register } from '../Controller/User.Controller.js';
 import authMiddleware from '../Middlewares/Auth.Middleware.js';
 
 const UserRouter = Router();
@@ -7,6 +7,6 @@ const UserRouter = Router();
 UserRouter.post('/register',register)
 UserRouter.post('/login',login)
 UserRouter.get('/chats',authMiddleware,getChats);
-UserRouter.get('/info',authMiddleware,getChats);
+UserRouter.get('/info',authMiddleware,getUserData);
 
 export default UserRouter

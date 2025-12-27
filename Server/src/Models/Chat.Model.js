@@ -17,7 +17,7 @@ const chatSchema = new mongoose.Schema({
   },
   action: {
     type: String,
-    enum: ['Summarize', 'Explain', 'Suggest', 'Trim'],
+    enum: ['Summarize', 'Explain', 'Suggest', 'Trim','DSA Guide','Polyglot','Custom'],
     required: true
   },
   language: {

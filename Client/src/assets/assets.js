@@ -17,9 +17,11 @@ import login_ from './login.png'
 import editor from './editor.png'
 import pricing from './pricing.png'
 
+import demo from './demo.mp4'
 export const assets = {
 pricing,editor,login_,landing,home,
     logo,
+    demo,
     login,signup,
     upload,
     hero, 

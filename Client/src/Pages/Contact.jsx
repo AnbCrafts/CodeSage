@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
-import { 
-  Mail, 
-  MapPin, 
-  Phone, 
-  MessageSquare, 
-  Send, 
-  HelpCircle,
-  ChevronDown 
-} from 'lucide-react';
+import React, { useState, useContext } from 'react';
+import { Mail, MapPin, Phone, MessageSquare, Send, HelpCircle, ChevronDown, Loader2 } from 'lucide-react';
 import HomeHeader from '../Components/HomeHeader';
+import { CodeContext } from '../ContextAPI/CodeContext'; // 1. Import Context
 
 const Contact = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const { sendCustomEmail } = useContext(CodeContext); // 2. Get the send function
+  const [loading, setLoading] = useState(false);
+  
+  const [formData, setFormData] = useState({ 
+    firstName: '', 
+    lastName: '', 
+    email: '', 
+    message: '' 
+  });
+  
   const [activeFAQ, setActiveFAQ] = useState(null);
 
   const faqs = [
@@ -21,7 +23,28 @@ const Contact = () => {
   ];
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-  const handleSubmit = (e) => { e.preventDefault(); console.log(formData); };
+
+  // 3. Updated Submit Handler
+  const handleSubmit = async (e) => { 
+    e.preventDefault();
+    setLoading(true);
+
+    // Prepare data for the utility (combining names)
+    const emailData = {
+      user_name: `${formData.firstName} ${formData.lastName}`.trim(),
+      user_email: formData.email,
+      message: formData.message,
+      subject: "New Contact Form Message"
+    };
+
+    // Send via Context Utility (handles Toast & API)
+    const success = await sendCustomEmail(emailData);
+
+    if (success) {
+      setFormData({ firstName: '', lastName: '', email: '', message: '' });
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="bg-slate-950 min-h-screen text-slate-200 font-sans selection:bg-purple-500 selection:text-white">
@@ -106,18 +129,19 @@ const Contact = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-400">First Name</label>
                     <input 
-                      type="text" name="name" 
+                      type="text" name="firstName" 
                       className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
                       placeholder="John"
-                      value={formData.name} onChange={handleChange} required 
+                      value={formData.firstName} onChange={handleChange} required 
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-400">Last Name</label>
                     <input 
-                      type="text" 
+                      type="text" name="lastName"
                       className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
                       placeholder="Doe"
+                      value={formData.lastName} onChange={handleChange}
                     />
                   </div>
                 </div>
@@ -144,9 +168,11 @@ const Contact = () => {
 
                 <button 
                   type="submit" 
-                  className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-purple-900/20 flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-purple-900/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Send size={18} /> Send Message
+                  {loading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                  {loading ? "Sending..." : "Send Message"}
                 </button>
               </form>
             </div>

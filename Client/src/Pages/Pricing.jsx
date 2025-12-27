@@ -1,28 +1,37 @@
-import React, { useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Check, X, Zap, Crown, HelpCircle } from 'lucide-react';
 import HomeHeader from '../Components/HomeHeader';
+import { useParams, useNavigate } from 'react-router-dom'; // Added useNavigate
+import { CodeContext } from '../ContextAPI/CodeContext';
 
 const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' or 'yearly'
-  const [isLoading, setIsLoading] = useState(false);
+  
+  // 1. Get real context values (assuming you have isLoading in context, if not local state is fine)
+  const { subscribeToPro, isLoading: contextLoading } = useContext(CodeContext);
+  const [localLoading, setLocalLoading] = useState(false); // Local state for button feedback
+  
+  const { secureHash } = useParams();
+  const navigate = useNavigate();
 
-  // Mock User (Replace with Context)
-  const user = { isLoggedIn: true, isPro: false }; 
+  // 2. Real Auth Check
+  const isLoggedIn = !!localStorage.getItem("token"); 
 
   const handleUpgrade = async () => {
-    if (!user.isLoggedIn) {
-      window.location.href = '/login';
+    if (!isLoggedIn) {
+      // Redirect to login, preserving where they came from
+      navigate('/login', { state: { from: window.location.pathname } });
       return;
     }
 
-    setIsLoading(true);
-    // TODO: Call your backend API here to get Stripe/Razorpay URL
-    console.log("Initiating Payment Process...");
+    setLocalLoading(true);
     
-    setTimeout(() => {
-      setIsLoading(false);
-      alert("This will redirect to Stripe Checkout in the real app!");
-    }, 1500);
+    // 3. Call the real function (No setTimeout needed)
+    await subscribeToPro(billingCycle, secureHash);
+    
+    // Note: If successful, the page redirects to Stripe. 
+    // If it fails, we stop loading.
+    setLocalLoading(false);
   };
 
   const features = [
@@ -41,7 +50,7 @@ const Pricing = () => {
 
       <div className="max-w-7xl mx-auto pt-28 pb-10 px-6">
         
-        {/* 1. HEADER & TOGGLE */}
+        {/* HEADER & TOGGLE */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Simple, Transparent Pricing
@@ -50,7 +59,6 @@ const Pricing = () => {
             Start for free, upgrade when you need the power. No hidden fees.
           </p>
 
-          {/* Toggle Switch */}
           <div className="inline-flex bg-slate-900 p-1 rounded-xl border border-white/10 relative">
             <button 
               onClick={() => setBillingCycle('monthly')}
@@ -67,7 +75,7 @@ const Pricing = () => {
           </div>
         </div>
 
-        {/* 2. PRICING CARDS */}
+        {/* PRICING CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-20">
           
           {/* FREE PLAN */}
@@ -81,7 +89,7 @@ const Pricing = () => {
               <p className="text-slate-400 mt-4 text-sm">Perfect for students and quick code checks.</p>
             </div>
             
-            <button className="w-full py-3 rounded-xl border border-white/10 text-white font-bold hover:bg-white/5 transition-colors mb-8">
+            <button className="w-full py-3 rounded-xl border border-white/10 text-white font-bold hover:bg-white/5 transition-colors mb-8 cursor-default">
               Current Plan
             </button>
 
@@ -89,9 +97,9 @@ const Pricing = () => {
               {features.map((feat, idx) => (
                 <div key={idx} className="flex items-center gap-3 text-sm">
                   {feat.free ? (
-                     <Check size={16} className="text-slate-500 shrink-0" />
+                      <Check size={16} className="text-slate-500 shrink-0" />
                   ) : (
-                     <X size={16} className="text-slate-700 shrink-0" />
+                      <X size={16} className="text-slate-700 shrink-0" />
                   )}
                   <span className={feat.free ? "text-slate-300" : "text-slate-600 line-through"}>
                     {typeof feat.free === 'string' ? `${feat.name}: ${feat.free}` : feat.name}
@@ -101,7 +109,7 @@ const Pricing = () => {
             </div>
           </div>
 
-          {/* PRO PLAN (Highlighted) */}
+          {/* PRO PLAN */}
           <div className="relative group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl opacity-75 blur group-hover:opacity-100 transition duration-1000"></div>
             <div className="relative bg-[#0f172a] rounded-3xl p-8 flex flex-col h-full">
@@ -116,7 +124,8 @@ const Pricing = () => {
                 </h3>
                 <div className="flex items-baseline gap-1 mt-4">
                   <span className="text-4xl font-bold text-white">
-                    {billingCycle === 'monthly' ? '$9' : '$89'}
+                    {/* Updated prices to match Backend (999 cents = 9.99) */}
+                    {billingCycle === 'monthly' ? '$9.99' : '$99.99'}
                   </span>
                   <span className="text-slate-500">
                     {billingCycle === 'monthly' ? '/ month' : '/ year'}
@@ -127,22 +136,22 @@ const Pricing = () => {
 
               <button 
                 onClick={handleUpgrade}
-                disabled={isLoading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:opacity-90 transition-opacity mb-8 flex justify-center items-center gap-2 shadow-lg shadow-purple-900/20"
+                disabled={localLoading || contextLoading}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:opacity-90 transition-opacity mb-8 flex justify-center items-center gap-2 shadow-lg shadow-purple-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? "Processing..." : "Upgrade Now"} <Zap size={18} fill="currentColor" />
+                {(localLoading || contextLoading) ? "Processing..." : "Upgrade Now"} <Zap size={18} fill="currentColor" />
               </button>
 
               <div className="space-y-4 flex-1">
                 {features.map((feat, idx) => (
                   <div key={idx} className="flex items-center gap-3 text-sm">
                     {feat.pro ? (
-                       <Check size={16} className="text-green-400 shrink-0" />
+                        <Check size={16} className="text-green-400 shrink-0" />
                     ) : (
-                       <X size={16} className="text-slate-700 shrink-0" />
+                        <X size={16} className="text-slate-700 shrink-0" />
                     )}
                     <span className={feat.pro ? "text-white font-medium" : "text-slate-600"}>
-                       {typeof feat.pro === 'string' ? `${feat.name}: ${feat.pro}` : feat.name}
+                        {typeof feat.pro === 'string' ? `${feat.name}: ${feat.pro}` : feat.name}
                     </span>
                   </div>
                 ))}
@@ -152,7 +161,7 @@ const Pricing = () => {
 
         </div>
 
-        {/* 3. FAQ SECTION */}
+        {/* FAQ SECTION */}
         <div className="max-w-3xl mx-auto border-t border-white/5 pt-16">
           <h2 className="text-2xl font-bold text-white mb-8 text-center">Frequently Asked Questions</h2>
           <div className="space-y-6">

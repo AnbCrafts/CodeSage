@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
       type: Number,
       default: 0
     }
-  },
+  }, 
   
   subscription: {
     type: mongoose.Schema.Types.ObjectId,

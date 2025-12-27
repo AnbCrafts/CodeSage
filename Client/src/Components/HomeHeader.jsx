@@ -41,7 +41,7 @@ const HomeHeader = () => {
 
 const navLinks = [
   { name: "Home", path: secureHash ? basePath : "/" },
-  { name: "AI", path: `${basePath}/analyze` },
+  { name: "AI", path:secureHash?`${basePath}/analyze`:"/login" },
   { name: "Services", path: `${basePath}/services` },
   { name: "About", path: `${basePath}/about` },
   { name: "Contact", path: `${basePath}/contact` },
@@ -50,12 +50,6 @@ const navLinks = [
 
 
 
-
-
-
-useEffect(()=>{
-  console.log(userInfo);
-},[userInfo])
 
 
 const navigate = useNavigate();

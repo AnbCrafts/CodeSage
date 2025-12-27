@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { 
   Code2, 
   Cpu, 
@@ -19,10 +19,30 @@ import HomeHeader from '../Components/HomeHeader';
 import { assets } from '../assets/assets';
 import Dashboard from '../Components/Dashboard';
 import Templates from './Teamplates';
+import HomeSupport from '../Components/HomeSupport';
+
 
 const Home = () => {
   const {secureHash} = useParams();
   const url = secureHash?`/code-sage/${secureHash}/analyze`:'/login'
+  
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) return;
+
+    const id = location.hash.replace("#", "");
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location.hash]);
+
+
+  
+
+  
   return (
     <div className="bg-slate-950 min-h-screen text-slate-200 selection:bg-purple-500 selection:text-white">
       <HomeHeader />
@@ -86,7 +106,7 @@ const Home = () => {
       </div>
 
       {/* ================= INTERACTIVE DEMO (Mockup) ================= */}
-      <div className="max-w-6xl mx-auto px-6 mb-32 relative">
+      <div id='demo' className="max-w-7xl mx-auto px-6 mb-32 relative">
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-20" />
         
         <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-slate-900/50 backdrop-blur-xl group">
@@ -101,8 +121,10 @@ const Home = () => {
           </div>
 
           <div className="relative h-[400px] md:h-[600px] w-full flex items-center justify-center">
-             <img 
-               src={assets.hero_bg} 
+             <video 
+               src={assets.demo}
+               autoPlay={true}
+               loop={true} 
                alt="CodeSage Interface" 
                className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-700" 
              />
@@ -119,6 +141,14 @@ const Home = () => {
       </div>
 
       {/* ================= FEATURES GRID ================= */}
+    <div id='features'>
+     <HomeSupport/>
+
+    </div>
+
+
+      
+      
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Supercharge your workflow</h2>
@@ -173,7 +203,7 @@ const Home = () => {
       </div>
 
       {/* ================= LIVE EDITOR PREVIEW ================= */}
-      <div className="max-w-5xl mx-auto px-6 py-24">
+      {/* <div className="max-w-5xl mx-auto px-6 py-24">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             Try it Live
@@ -198,7 +228,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* ================= USE CASES ================= */}
       <div className="max-w-7xl mx-auto px-6 py-20">
@@ -258,6 +288,8 @@ const Home = () => {
       </div>
 
       {/* ================= NEWSLETTER ================= */}
+     
+     
       <div className="max-w-3xl mx-auto px-6 pb-32 text-center">
         <h2 className="text-2xl font-bold text-white mb-4">Stay updated</h2>
         <p className="text-slate-400 mb-8">Get the latest AI coding tips straight to your inbox.</p>

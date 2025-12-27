@@ -2,7 +2,8 @@ import React, { createContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
-
+import emailjs from '@emailjs/browser';
+// import toast from 'react-toastify';
 export const CodeContext = createContext();
 
 export const CodeContextProvider = ({ children }) => {
@@ -10,6 +11,8 @@ export const CodeContextProvider = ({ children }) => {
   // Ensure this port matches your Server (5000 or 9000)
   const backendURI = "http://localhost:9000/api"; 
   const navigate = useNavigate();
+const {secureHash} = useParams();
+const [proUser,setProUser] = useState(false);
 
   const [input, setInput] = useState("");
   const [result, setResult] = useState(""); // Default to empty string, not null
@@ -56,34 +59,51 @@ export const CodeContextProvider = ({ children }) => {
   }
 };
 
-const [userInfo,setUserInfo] = useState(null);
-const getInfo = async()=>{
-      try {
-        const response = await axios.get(`${backendURI}/user/info`,{headers:{
-          Authorization:`Bearer ${localStorage.getItem("token")}`
-        }})
+// Inside CodeContext.jsx
 
-        if(response && response.data.success){
-          const data = response.data.userData;
-          setUserInfo(data);
-        }else{
-          toast.error("No response or negative response from server")
-        }
-        
-      } catch (error) {
-        toast.error(error.message);
-      }
-}
+const [userInfo, setUserInfo] = useState(null);
+// const [isLoading, setIsLoading] = useState(true); // Default to true to prevent "Login" flash
 
-const {secureHash} = useParams();
+const getInfo = async () => {
+  setIsLoading(true);
+  try {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    const response = await axios.get(`${backendURI}/user/info`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (response.data.success) {
+      // ⚠️ Verify 'data' vs 'userData' matches your backend response
+      setUserInfo(response.data.data || response.data.userData); 
+    } else {
+      toast.error(response.data.message || "Failed to retrieve user data");
+      // Optional: localStorage.removeItem("token"); // Auto-logout on invalid session
+    }
+
+  } catch (error) {
+    console.error("Fetch Info Error:", error);
+    const errorMessage = error.response?.data?.message || "Session expired or network error";
+    // toast.error(errorMessage); // Optional: Silence generic errors on load
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// ✅ FIX: Run immediately on mount, don't wait for secureHash
 useEffect(() => {
-  if (!secureHash) return;
-
   const token = localStorage.getItem("token");
-  if (!token) return;
-
-  getInfo();
-}, [secureHash]);
+  if (token) {
+    getInfo();
+  } else {
+    setIsLoading(false); // Stop loading immediately if no token
+  }
+}, []);
 
 
 const handleCode = async (data) => {
@@ -151,6 +171,54 @@ const getUserChats = async () => {
 };
 
 
+// Ensure backendURI is defined at the top of your file
+// const backendURI = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000/api"; 
+
+// Add secureHash as a second parameter
+const subscribeToPro = async (planType = "monthly", secureHash) => {
+  setIsLoading(true);
+  try {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      toast.error("You must be logged in to upgrade.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!secureHash) {
+       toast.error("Workspace identifier missing.");
+       setIsLoading(false);
+       return;
+    }
+
+    const response = await axios.post(
+      `${backendURI}/subscribe/create-checkout-session`, 
+      { 
+        planType, 
+        secureHash // <--- Send the hash to the backend
+      }, 
+      { 
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }, 
+      }
+    );
+
+    if (response.data.url) {
+      window.location.href = response.data.url; 
+    } else {
+      toast.error("Failed to initiate payment session.");
+    }
+
+  } catch (error) {
+    console.error("Payment Error:", error);
+    toast.error(error.response?.data?.message || "Payment Error");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
 
   // --- UTILITIES ---
@@ -176,16 +244,74 @@ const getUserChats = async () => {
     document.body.removeChild(element);
   };
 
-  const codeContextValue = {
-    input, setInput,
-    isLoading, error,
-    handleCode, result,
-    handleCopyExplanation, handleSaveAsTxt,register,currUserData,getInfo,userInfo,getUserChats,userChats
+
+
+
+
+
+
+
+const sendCustomEmail = async (data) => {
+    const toastId = toast.loading("Sending message...");
+
+    // 1. READ VARIABLES INSIDE THE FUNCTION (Fixes loading issues)
+    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const ADMIN_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const AUTOREPLY_TEMPLATE_ID = import.meta.env.VITE_AUTOREPLY_EMAILJS_TEMPLATE_ID;
+    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    try {
+      // 2. DEBUG CHECK: Stop immediately if keys are missing
+      if (!SERVICE_ID || !PUBLIC_KEY || !ADMIN_TEMPLATE_ID) {
+        console.error("❌ EmailJS Error: Missing Environment Variables");
+        console.log({ SERVICE_ID, PUBLIC_KEY, ADMIN_TEMPLATE_ID }); // See which one is missing in Console
+        throw new Error("System configuration error: Missing API Keys");
+      }
+
+      // 3. Validate Input Data
+      if (!data.user_name || !data.user_email || !data.message) {
+        toast.error("Please fill in all fields", { id: toastId });
+        return false;
+      }
+
+      const templateParams = {
+        user_name: data.user_name,
+        user_email: data.user_email,
+        message: data.message,
+        subject: data.subject || "General Inquiry",
+        to_name: "CodeSage Admin",
+      };
+
+      await emailjs.send(SERVICE_ID, ADMIN_TEMPLATE_ID, templateParams, PUBLIC_KEY);
+
+      if (AUTOREPLY_TEMPLATE_ID) {
+        emailjs.send(SERVICE_ID, AUTOREPLY_TEMPLATE_ID, templateParams, PUBLIC_KEY)
+          .catch(err => console.warn("Auto-reply failed (non-critical):", err));
+      }
+
+      toast.success("Message sent successfully!", { id: toastId });
+      return true;
+
+    } catch (error) {
+      console.error("Email Error Details:", error);
+      // Show specific error if it's the key issue
+      const msg = error.text || error.message || "Failed to send";
+      toast.error(`Error: ${msg}`, { id: toastId });
+      return false;
+    }
   };
 
 
 
+  const codeContextValue = {
+    input, setInput,
+    isLoading, error,
+    handleCode, result,
+    handleCopyExplanation, handleSaveAsTxt,register,currUserData,getInfo,userInfo,getUserChats,userChats,
+    sendCustomEmail,subscribeToPro,proUser
+  };
  
+
 
   return (
     <CodeContext.Provider value={codeContextValue}>

@@ -25,9 +25,13 @@ const extractTitleHint = (code) => {
 
 
 
+const cleanLLMResponse = (text) => {
+  if (!text) return "";
+  return text.replace(/^```[a-z]*\n/i, "").replace(/```$/, "").trim();
+};
 
 export const analyzeCode = asyncHandler(async (req, res) => {
-  const { code, action, chatId } = req.body;
+  const { code, action, chatId,language,targetLanguage,customPrompt } = req.body;
   // Fallback to body.userId only if middleware fails (unlikely if setup correctly)
   const userId = req.user?._id || req.body.userId; 
 
@@ -62,6 +66,8 @@ export const analyzeCode = asyncHandler(async (req, res) => {
 
   // --- 2. SELECT SYSTEM PROMPT ---
   let systemPrompt = "";
+
+
  
  switch (action) {
     case "Summarize":
@@ -161,8 +167,120 @@ Critical rules:
 - Do NOT explain unless under "Better Suggestions".
 - Output raw code only.
 `;
-
+ 
       break;
+    case "DSA Guide":
+      systemPrompt = `
+You are a senior DSA instructor, competitive programmer, and code mentor.
+
+Your task is to analyze the given DSA code and transform it into a learning-oriented, self-revisable explanation.
+
+Follow this structure STRICTLY and in the SAME ORDER:
+
+────────────────────────────
+1️⃣ PROBLEM HEADING
+────────────────────────────
+- Add a clear, appropriate heading for the problem.
+  Example:
+  // Problem: Check if a Number is Prime
+  // Problem: Bubble Sort Algorithm
+  // Problem: Find GCD using Euclidean Algorithm
+
+────────────────────────────
+2️⃣ APPROACH OVERVIEW
+────────────────────────────
+- Briefly describe the approach used.
+- Mention why this approach is chosen.
+- Avoid unnecessary theory.
+
+────────────────────────────
+3️⃣ TIME & SPACE COMPLEXITY
+────────────────────────────
+- Clearly state:
+  // Time Complexity: O(...)
+  // Space Complexity: O(...)
+- If any specific line affects complexity, mention it explicitly in comments later.
+
+────────────────────────────
+4️⃣ CODE WITH DETAILED COMMENTS
+────────────────────────────
+- Rewrite the given code with **meaningful comments BETWEEN lines**.
+- Comments must answer:
+  • Why this loop is needed
+  • Why this condition is checked
+  • Why this variable exists
+  • Why iteration stops at this point
+- If a line impacts time/space complexity, highlight it using comments like:
+  // ⚠️ This loop contributes to O(n²) time complexity
+
+────────────────────────────
+5️⃣ STEP-BY-STEP DRY RUN (EXAMPLE)
+────────────────────────────
+- Pick ONE meaningful example input.
+- Explain execution step-by-step.
+- For iterative algorithms, show state changes clearly.
+  Example:
+  // Step 1: Array = [5, 3, 1]
+  // Step 2: After first iteration → [3, 5, 1]
+- Keep it sequential and easy to visualize.
+
+────────────────────────────
+6️⃣ EDGE CASE TESTS
+────────────────────────────
+- Provide important test cases where algorithms usually fail.
+- Mention WHY each test case is important.
+  Example:
+  // Edge Case: n = 0 → No elements to process
+  // Edge Case: n = 1 → Loop should not execute
+
+────────────────────────────
+7️⃣ BETTER APPROACHES (IF ANY)
+────────────────────────────
+- If a better approach exists:
+  Add comments EXACTLY like this:
+  // Another approach for better complexity:
+  // Algorithm: <name>
+  // Time Complexity: O(x)
+  // Space Complexity: O(y)
+- Do NOT provide code for the alternative approach.
+
+────────────────────────────
+8️⃣ FINAL CLEAN CODE (NO COMMENTS)
+────────────────────────────
+- Output the final optimized version of the SAME code.
+- Remove ALL comments.
+- Preserve logic exactly.
+- This section must contain ONLY code.
+
+CRITICAL RULES:
+- Do NOT use markdown backticks.
+- Use ONLY comments (//) for explanations.
+- Do NOT change the algorithm unless explicitly stated.
+- Do NOT add unnecessary theory.
+- Output must be readable and revision-friendly.
+
+`;
+ 
+      break;
+
+     case "Custom":
+  systemPrompt = `
+${customPrompt}
+  `;
+  break;
+
+
+       case "Polyglot":
+        if (!targetLanguage) throw new ApiError(400, "Target language required for Polyglot action");
+  systemPrompt = `
+Convert the given code written in ${language} into ${targetLanguage}.
+Preserve the exact logic, control flow, data structures, and behavior.
+Do not add comments, explanations, or extra text.
+Return only valid, clean, executable ${targetLanguage} code.
+  `;
+  break;
+
+
     default:
       throw new ApiError(400, "Invalid action");
   }
@@ -175,14 +293,15 @@ Critical rules:
     ],
     model: "llama-3.3-70b-versatile",
     temperature: 0.5,
-    max_tokens: 1024,
+    max_tokens: 2048,
   });
 
   if (!completion?.choices?.length) {
     throw new ApiError(502, "AI service failed");
   }
 
-  const result = completion.choices[0].message.content;
+  const rawResult = completion.choices[0].message.content;
+  const result = cleanLLMResponse(rawResult);
 
   const titleHint = extractTitleHint(code);
   const title = `${{
@@ -190,7 +309,10 @@ Critical rules:
     Explain: "Explanation",
     Suggest: "Improvements",
     Trim: "Refactored",
-  }[action]}: ${titleHint}`.slice(0, 50);
+    "DSA Guide": "Explained", // Fix: Use quotes to match the string with space
+    "Polyglot": "Converted", // Fix: Use quotes to match the string with space
+    "Custom": "Custom Modification", // Fix: Use quotes to match the string with space
+}[action] || "Analysis"}: ${titleHint}`.slice(0, 50);
 
   // --- 4. DATABASE UPDATE LOGIC ---
   let chat;
@@ -204,6 +326,7 @@ Critical rules:
         code,
         action,
         result,
+        language
       },
       { new: true }
     );
@@ -223,6 +346,7 @@ Critical rules:
       code,
       action,
       result,
+      language
     });
 
     await UserModel.findByIdAndUpdate(userId, {
@@ -238,8 +362,12 @@ Critical rules:
     title,
     action,
     result,
+    language
   });
 });
+
+
+
 
 
 
