@@ -15,7 +15,7 @@ import { CodeContext } from '../ContextAPI/CodeContext';
 import ChatHistorySidebar from '../Components/ChatHistorySidebar';
 import { useLocation } from 'react-router-dom';
 
-const FreeUserWorkSpace = () => {
+const FreeUserWorkSpace = () => { 
     
   const {
     input, setInput,
@@ -26,36 +26,72 @@ const FreeUserWorkSpace = () => {
     result, setResult,
     userChats, getUserChats
   } = useContext(CodeContext); 
-  const [language,setLanguage]= useState("javascript");
 
+  const { userInfo, getInfo } = useContext(CodeContext);
+  
+    useEffect(() => {
+      // Force a fresh fetch from the DB every time the Analyze page is visited
+      const syncUser = async () => {
+         await getInfo();
+      };
+      syncUser();
+    }, []); 
+
+
+   
+
+  // --- STATE ---
+  const [language, setLanguage] = useState("javascript");
   const [activeTab, setActiveTab] = useState("summary");
   const [currentChatId, setCurrentChatId] = useState(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(true);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
+  // --- LOGIC ---
   const runAnalysis = async (actionType) => {
+    // Priority: 1. Passed arg, 2. Current state
     const selectedAction = actionType || activeTab;
+    
+    // Update local UI immediately
     setActiveTab(selectedAction);
 
-    let backendAction = "Summarize";
-    if (selectedAction === "summary") backendAction = "Summarize";
-    if (selectedAction === "explain") backendAction = "Explain";
-    if (selectedAction === "suggest") backendAction = "Suggest";
-    if (selectedAction === "trim") backendAction = "Trim";
-    if (selectedAction === "dsa_guide") backendAction = "DSA Guide";
+    const actionMapping = {
+      summary: "Summarize",
+      explain: "Explain",
+      suggest: "Suggest",
+      trim: "Trim",
+      dsa_guide: "DSA Guide"
+    };
+
+    const backendAction = actionMapping[selectedAction] || "Summarize";
+
+    console.log("Analysis run for the following states ----------")
+    console.log("language - \n", language)
+    console.log("backendAction - \n", backendAction)
+    console.log("code - \n", input)
+    console.log("currentChatId - \n", currentChatId)
 
     await handleCode({ 
       code: input, 
       action: backendAction, 
-      chatId: currentChatId ,
-      language:language
+      chatId: currentChatId,
+      language: language // Explicitly send the state language
     });
+
+
+    setActiveTab(selectedAction);
+    setLanguage(language);
   };
+
+ 
 
   const handleSelectChat = (chat) => {
     setInput(chat.code);
     setCurrentChatId(chat._id); 
     if (setResult) setResult(chat.result);
+    
+    // Sync language from history if available
+    if(chat.language) setLanguage(chat.language.toLowerCase());
 
     const tabMapping = {
         "Summarize": "summary",
@@ -98,36 +134,47 @@ const FreeUserWorkSpace = () => {
     monaco.editor.setTheme('codesage-dark');
   };
 
-  useEffect(()=>{
+  // Initial load
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if(token) getUserChats();
-  },[])
+  }, []);
 
+  
+
+  // Handle routing templates
   const location = useLocation();
   useEffect(() => {
     if (location.state) {
-      const { templatePrompt, activeTab } = location.state;
+      const { templatePrompt, activeTab: navTab, language: navLang } = location.state;
       if (templatePrompt) setInput(templatePrompt);
-      if (activeTab) setActiveTab(activeTab);
+      if (navTab) setActiveTab(navTab);
+      if (navLang) setLanguage(navLang);
       window.history.replaceState({}, document.title);
     }
-  }, [location]);
+  }, [location, setInput]);
 
   const languages = [
-  { label: "JavaScript", value: "javascript" },
-  { label: "TypeScript", value: "typescript" },
-  { label: "Python", value: "python" },
-  { label: "C++", value: "cpp" },
-  { label: "Java", value: "java" },
-  { label: "C", value: "c" },
-  { label: "Go", value: "go" },
-  { label: "Rust", value: "rust" },
-  { label: "HTML", value: "html" },
-  { label: "CSS", value: "css" },
-  { label: "JSON", value: "json" },
-];
+    { label: "JavaScript", value: "javascript" },
+    { label: "TypeScript", value: "typescript" },
+    { label: "Python", value: "python" },
+    { label: "C++", value: "cpp" },
+    { label: "Java", value: "java" },
+    { label: "C", value: "c" },
+    { label: "Go", value: "go" },
+    { label: "Rust", value: "rust" },
+    { label: "HTML", value: "html" },
+    { label: "CSS", value: "css" },
+    { label: "JSON", value: "json" },
+  ];
 
 
+  // useEffect(()=>{
+  //   console.log("Analysis run for - ", language)
+  //   console.log("Analysis run for - ", activeTab)
+  //   console.log("Analysis run for - \n", input)
+  //   // console.log("Analysis run for - ", actionMapping[activeTab])
+  // },[activeTab,input,language])
 
   return (
     <div className="bg-slate-950 min-h-screen flex flex-col text-slate-200 font-sans selection:bg-purple-500 selection:text-white">
@@ -144,7 +191,7 @@ const FreeUserWorkSpace = () => {
            />
         )}
 
-        <div className="flex-1 flex  flex-col min-w-0 w-lg bg-[#020617] min-h-screen">
+        <div className="flex-1 flex flex-col min-w-0 w-lg bg-[#020617] min-h-screen">
           
           <div className="h-16 border-b border-white/5 bg-slate-900/50 flex items-center justify-between px-4 md:px-6 shrink-0 backdrop-blur-sm z-20">
             
@@ -255,7 +302,7 @@ const FreeUserWorkSpace = () => {
             <div className="flex-1 min-w-0 noScroll relative border-r border-white/5 min-h-[50%] md:min-h-full flex flex-col">
                <Editor
                   height="100%"
-                  language={language || result?.language} 
+                  language={language} // FIXED: removed fallback to result?.language to prevent reset
                   onMount={handleEditorDidMount}
                   theme="vs-dark"
                   value={input}
@@ -302,7 +349,7 @@ const FreeUserWorkSpace = () => {
                     <div className="animate-in fade-in duration-500 max-w-full noScroll">
                        {activeTab === "trim" || activeTab === "suggest"|| activeTab === "dsa_guide" ? (
                          <SyntaxHighlighter 
-                           language="javascript" 
+                           language={language} // FIXED: use dynamic language state
                            style={vscDarkPlus}
                            customStyle={{ margin: 0, padding: '1.5rem', borderRadius: '0.5rem', fontSize: '0.9rem', backgroundColor: '#020617', border: '1px solid rgba(255,255,255,0.05)' }}
                            wrapLongLines={true}

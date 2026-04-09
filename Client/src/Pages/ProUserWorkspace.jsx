@@ -239,7 +239,7 @@ const ProUserWorkspace = () => {
                     >
                        {TABS_CONFIG.map(tab => <option key={tab.id} value={tab.id}>{tab.label}</option>)}
                     </select>
-                 </div>
+                 </div> 
 
                  {/* Run Button */}
                  <button 

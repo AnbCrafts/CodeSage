@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { 
   Code2, 
@@ -20,6 +20,7 @@ import { assets } from '../assets/assets';
 import Dashboard from '../Components/Dashboard';
 import Templates from './Teamplates';
 import HomeSupport from '../Components/HomeSupport';
+import { CodeContext } from '../ContextAPI/CodeContext';
 
 
 const Home = () => {
@@ -39,8 +40,20 @@ const Home = () => {
     }
   }, [location.hash]);
 
-
+   const { userInfo, isLoading, getInfo } = useContext(CodeContext);
   
+    useEffect(() => {
+      // Force a fresh fetch from the DB every time the Analyze page is visited
+      const syncUser = async () => {
+         await getInfo();
+      };
+      syncUser();
+    }, []); 
+
+
+  // useEffect(()=>{
+  //   console.log("userInfo",userInfo);
+  // },[userInfo])
 
   
   return (

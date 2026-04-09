@@ -24,16 +24,30 @@ const Login = () => {
     password: "",
   });
 
-  const [loginForm,setLoginForm] = useState({
-    identifier:"",
-    password:""
-  }) 
+  const [loginForm, setLoginForm] = useState({
+    identifier: "",
+    password: "",
+  });
 
- const submitHandler = async (e) => {
-  e.preventDefault();
+  const submitHandler = async (e) => {
+    e.preventDefault();
 
-  if (isLogin) {
-    const hasEmptyField = Object.values(loginForm).some(
+    if (isLogin) {
+      const hasEmptyField = Object.values(loginForm).some(
+        (value) => value.trim() === ""
+      );
+
+      if (hasEmptyField) {
+        toast.warn("Please fill all fields");
+        return;
+      }
+
+      await register(loginForm, "login");
+      return;
+    }
+
+    // Register flow
+    const hasEmptyField = Object.values(registrationForm).some(
       (value) => value.trim() === ""
     );
 
@@ -42,23 +56,8 @@ const Login = () => {
       return;
     }
 
-    await register(loginForm, "login");
-    return; // 🔴 IMPORTANT
-  }
-
-  // Register flow
-  const hasEmptyField = Object.values(registrationForm).some(
-    (value) => value.trim() === ""
-  );
-
-  if (hasEmptyField) {
-    toast.warn("Please fill all fields");
-    return;
-  }
-
-  await register(registrationForm, "register");
-};
-
+    await register(registrationForm, "register");
+  };
 
   return (
     <div className="bg-slate-950 min-h-screen text-slate-200 font-sans selection:bg-purple-500 selection:text-white">
@@ -103,13 +102,15 @@ const Login = () => {
 
               {/* Input Fields */}
               <form onSubmit={submitHandler} className="space-y-4">
-                <AnimatePresence>
-                  {!isLogin && (
+                <AnimatePresence mode="wait">
+                  {!isLogin ? (
                     <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
+                      key="register-fields"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-4"
                     >
                       <div className="relative">
                         <User
@@ -131,95 +132,100 @@ const Login = () => {
                       </div>
 
                       <div className="relative">
-                  <Mail
-                    className="absolute left-4 top-3.5 text-slate-500"
-                    size={20}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email Address"
-                    value={registrationForm.email}
-                    onChange={(e) => {
-                      setRegistrationForm({
-                        ...registrationForm,
-                        email: e.target.value,
-                      });
-                    }}
-                    className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
-                  />
-                </div>
-                 <div className="relative">
-                  <Lock
-                    className="absolute left-4 top-3.5 text-slate-500"
-                    size={20}
-                  />
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    value={registrationForm.password}
-                    onChange={(e) => {
-                      setRegistrationForm({
-                        ...registrationForm,
-                        password: e.target.value,
-                      });
-                    }}
-                    className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
-                  />
-                </div>
+                        <Mail
+                          className="absolute left-4 top-3.5 text-slate-500"
+                          size={20}
+                        />
+                        <input
+                          type="email"
+                          placeholder="Email Address"
+                          value={registrationForm.email}
+                          onChange={(e) => {
+                            setRegistrationForm({
+                              ...registrationForm,
+                              email: e.target.value,
+                            });
+                          }}
+                          className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                        />
+                      </div>
+                      <div className="relative">
+                        <Lock
+                          className="absolute left-4 top-3.5 text-slate-500"
+                          size={20}
+                        />
+                        <input
+                          type="password"
+                          placeholder="Password"
+                          value={registrationForm.password}
+                          onChange={(e) => {
+                            setRegistrationForm({
+                              ...registrationForm,
+                              password: e.target.value,
+                            });
+                          }}
+                          className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                        />
+                      </div>
                     </motion.div>
+                  ) : (
+                    <motion.div
+                      key="login-fields"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-4"
+                    >
+                      <div className="relative">
+                        <Mail
+                          className="absolute left-4 top-3.5 text-slate-500"
+                          size={20}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Email Address or Username"
+                          value={loginForm.identifier}
+                          onChange={(e) => {
+                            setLoginForm({
+                              ...loginForm,
+                              identifier: e.target.value,
+                            });
+                          }}
+                          className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                        />
+                      </div>
 
-                    
+                      <div className="relative">
+                        <Lock
+                          className="absolute left-4 top-3.5 text-slate-500"
+                          size={20}
+                        />
+                        <input
+                          type="password"
+                          placeholder="Password"
+                          value={loginForm.password}
+                          onChange={(e) => {
+                            setLoginForm({
+                              ...loginForm,
+                              password: e.target.value,
+                            });
+                          }}
+                          className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                        />
+                      </div>
+
+                      <div className="flex justify-end">
+                        <a
+                          href="#"
+                          className="text-sm text-purple-400 hover:text-purple-300"
+                        >
+                          Forgot password?
+                        </a>
+                      </div>
+                    </motion.div>
                   )}
                 </AnimatePresence>
-
-                <div className="relative">
-                  <Mail
-                    className="absolute left-4 top-3.5 text-slate-500"
-                    size={20}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Email Address or Username"
-                    value={loginForm.identifier}
-                    onChange={(e) => {
-                      setLoginForm({
-                        ...loginForm,
-                        identifier: e.target.value,
-                      });
-                    }}
-                    className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
-                  />
-                </div>
-
-                <div className="relative">
-                  <Lock
-                    className="absolute left-4 top-3.5 text-slate-500"
-                    size={20}
-                  />
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    value={loginForm.password}
-                    onChange={(e) => {
-                      setLoginForm({
-                        ...loginForm,
-                        password: e.target.value,
-                      });
-                    }}
-                    className="w-full bg-slate-900 border border-slate-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
-                  />
-                </div>
-
-                {isLogin && (
-                  <div className="flex justify-end">
-                    <a
-                      href="#"
-                      className="text-sm text-purple-400 hover:text-purple-300"
-                    >
-                      Forgot password?
-                    </a>
-                  </div>
-                )}
 
                 <button
                   type="submit"
@@ -253,7 +259,6 @@ const Login = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="hidden lg:block relative"
           >
-            {/* Background Blob */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[100px] -z-10" />
 
             <div className="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl relative overflow-hidden">
